@@ -1,0 +1,17 @@
+32 32 32 64			# Size of the full lattice
+16 8 8 16			# Size of the sublattice for each processor
+#
+H                       # Set Hot/Cold start
+6000			# Number of monte carlo steps
+2000				# Number of thermalization steps
+3				# Number of confifurations to save
+0.2
+#
+puregauge		# Name of the action to use
+6.0				# Beta parameter for puregauge
+#
+plaquette		# Name of observable to compute
+1				# Bool for file output of observable
+#
+1 0 			# Bools for terminal / file output of configurations
+

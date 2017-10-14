@@ -1,6 +1,6 @@
-#include "su3.h"
-#include "complex.h"
-#include "random.h"
+#include "Math/su3.h"
+#include "Math/complex.h"
+#include "Math/random.h"
 #include <ctime>
 #include <cmath>
 #include <stdio.h>
@@ -378,3 +378,10 @@ SU3 getRandomTransformation(double epsilon){
 
     return U;
 }*/
+
+double getMultSumTrace(SU3 &a, SU3 &b){
+    return a.mat[0] * b.mat[0] - a.mat[1]*b.mat[1] + a.mat[2] * b.mat[6] - a.mat[3]*b.mat[7] + a.mat[4] * b.mat[12] - a.mat[5]*b.mat[13]
+         + a.mat[6] * b.mat[2] - a.mat[7]*b.mat[3] + a.mat[8] * b.mat[8] - a.mat[9]*b.mat[9] + a.mat[10] * b.mat[14] - a.mat[11]*b.mat[15]
+         + a.mat[12] * b.mat[4] - a.mat[13]*b.mat[5] +  a.mat[14] * b.mat[10] - a.mat[15]*b.mat[11] + a.mat[16] * b.mat[16] - a.mat[17]*b.mat[17];
+
+}

@@ -4,7 +4,7 @@
 #include "Math/lattice.h"
 #include "ParallelTools/parallel.h"
 #include "InputOutput/inputparser.h"
-#include "GaugeFieldFactory/gaugefieldfactory.h"
+#include "Apps/gaugefieldfactory.h"
 #include "Action/puregauge.h"
 #include "Observables/plaquette.h"
 #include <stdio.h>

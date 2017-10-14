@@ -1,6 +1,6 @@
-#include "clusterspecifier.h"
-#include "Utils/point.h"
-#include "Utils/lattice.h"
+#include "Utils/clusterspecifier.h"
+#include "Math/point.h"
+#include "Math/lattice.h"
 #include "InputOutput/inputconf.h"
 #include <stdio.h>
 #include <string>

@@ -74,7 +74,7 @@ hotcold=($line4)
 PROCS=$(( ${lattice[0]} / ${sublattice[0]} * ${lattice[1]} / ${sublattice[1]} * ${lattice[2]} / ${sublattice[2]} * ${lattice[3]} / ${sublattice[3]} ))
 
 # Set default arguments
-if [[ -z ${NAME} ]]; then NAME="${lattice[0]}_${lattice[1]}_P${PROCS}"; fi
+if [[ -z ${NAME} ]]; then NAME="${lattice[0]}_P${PROCS}"; fi
 if [[ -z ${TIME} ]]; then TIME="24:00:00"; fi
 
 # Check time format

@@ -9,6 +9,6 @@ public:
     // virtual methods for the action class
     virtual void initAction(class Lattice* lattice) = 0;
     virtual double compute(int x, int y, int z, int t, int mu,
-                           struct SU3 newLink, struct SU3 constPart) = 0;
+                           struct SU3& newLink, struct SU3& constPart) = 0;
     virtual struct SU3 computeConstant(int x, int y, int z, int t, int mu) = 0;
 };

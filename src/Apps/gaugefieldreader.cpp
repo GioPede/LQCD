@@ -1,4 +1,4 @@
-#include "../clusterspecifier.h"
+#include "Utils/clusterspecifier.h"
 #ifndef LACONIA
 #include <mpi/mpi.h>
 #else
@@ -10,17 +10,18 @@
 #include <ctime>
 #include <cmath>
 #include <random>
-#include "../Math/random.h"
-#include "gaugefieldreader.h"
-#include "../InputOutput/inputparser.h"
-#include "../InputOutput/outputconf.h"
-#include "../InputOutput/inputconf.h"
-#include "../Utils/lattice.h"
-#include "../Action/action.h"
-#include "../Action/actionlist.h"
-#include "../Math/random.h"
-#include "../Observables/observable.h"
-#include "../ParallelTools/parallel.h"
+#include "Math/random.h"
+#include "Apps/gaugefieldreader.h"
+#include "InputOutput/inputparser.h"
+#include "InputOutput/outputconf.h"
+#include "InputOutput/inputconf.h"
+#include "Math/lattice.h"
+#include "Action/action.h"
+#include "Action/actionlist.h"
+#include "Math/random.h"
+#include "Observables/observable.h"
+#include "ParallelTools/parallel.h"
+
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
 GaugeFieldReader::GaugeFieldReader(InputParser* input, Parallel* parallel){

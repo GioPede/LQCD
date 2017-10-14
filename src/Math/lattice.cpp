@@ -1,7 +1,7 @@
-#include "lattice.h"
-#include "point.h"
-#include "../Math/su3.h"
-#include "../ParallelTools/parallel.h"
+#include "Math/lattice.h"
+#include "Math/point.h"
+#include "Math/su3.h"
+#include "ParallelTools/parallel.h"
 #include <cstdio>
 #include <mpi.h>
 

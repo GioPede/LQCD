@@ -1,4 +1,4 @@
-#include "parallel.h"
+#include "ParallelTools/parallel.h"
 #include <mpi/mpi.h>
 #include <vector>
 

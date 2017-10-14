@@ -2,9 +2,9 @@
 
 class OutputConf{
     public:
-        OutputConf(class GaugeFieldFactory* gff);
+        OutputConf(class App* app);
         void writeSubLattice(int update);
         void writeConfiguration(int confNum);
 private:
-        class GaugeFieldFactory* m_gff = nullptr;
+        class App* m_app = nullptr;
 };

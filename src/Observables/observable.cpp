@@ -1,5 +1,5 @@
-#include "observable.h"
-#include "../Utils/lattice.h"
+#include "Observables/observable.h"
+#include "Math/lattice.h"
 
 Observable::Observable(){
 

@@ -1,7 +1,7 @@
-#include "plaquette.h"
-#include "observable.h"
-#include "../Math/su3.h"
-#include "../Utils/lattice.h"
+#include "Observables/plaquette.h"
+#include "Observables/observable.h"
+#include "Math/su3.h"
+#include "Math/lattice.h"
 #include <cstdio>
 #include <cmath>
 

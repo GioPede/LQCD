@@ -3,12 +3,10 @@
 
 class InputConf{
     public:
-        InputConf(class GaugeFieldFactory* gff);
+        InputConf(class App* app);
         void readSubLattice(int update);
         void readConfiguration(int confNum);
-        InputConf(class GaugeFieldReader *gfr);
         void readConfiguration(std::string inputFile);
 private:
-        class GaugeFieldFactory* m_gff = nullptr;
-        class GaugeFieldReader* m_gfr = nullptr;
+        class App* m_app = nullptr;
 };

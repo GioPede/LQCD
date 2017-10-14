@@ -37,3 +37,4 @@ SU3 operator~(SU3 a);
 SU3 operator*(SU3 a, double b);
 
 SU3 getRandomTransformation(double epsilon);
+double getMultSumTrace(SU3& a, SU3& b);

@@ -5,7 +5,7 @@ build/*
 conf/*
 *.user
 *.sh
-
+CMakeLists.txt.user
 
 
 *~

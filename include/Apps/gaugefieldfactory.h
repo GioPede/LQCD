@@ -8,7 +8,6 @@ class GaugeFieldFactory : public App {
         GaugeFieldFactory(class InputParser* input, class Parallel* parallel);
 
         // main functions
-        void initGFF();
         void generateConfigurations();
 
         // setters-getters
@@ -18,15 +17,19 @@ class GaugeFieldFactory : public App {
         class Point& getLatticeSite(int x, int y, int z, int t);
         class Parallel* getParallel() { return m_parallel; }
         std::vector<int>& getSize() { return m_size; }
+        std::vector<double>& getObsValues() { return m_obsValues; }
 
-    private:
+private:
         // member classes
         class Lattice* m_lat = nullptr;
         class Action* m_act = nullptr;
         class Parallel* m_parallel = nullptr;
         class OutputConf* m_outputConf = nullptr;
+        class OutputTerm* m_outputTerm = nullptr;
+        class OutputObs* m_outputObs = nullptr;
         class InputConf* m_inputConf = nullptr;
         std::vector<class Observable*> m_obs;
+        std::vector<double> m_obsValues;
         std::mt19937* m_random = nullptr;
 
         // member variables
@@ -43,4 +46,10 @@ class GaugeFieldFactory : public App {
         char m_startType;
         void MCUpdate();
         void updateLink(int x, int y, int z, int t, int mu);
+        struct SU3 newLink, constPart;
+        void computeObservables();
+        void thermalize();
+        void sampleConf();
+        void thermalizeTime();
+        void sampleConfTime();
 };

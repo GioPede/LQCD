@@ -1,6 +1,6 @@
 # Specify the minimum version for CMake
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.5)
 
 # Project's name
 project(LatticeQCD)
@@ -25,16 +25,17 @@ set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
                ${PROJECT_SOURCE_DIR}/Math/random.cpp 
                ${PROJECT_SOURCE_DIR}/Math/lattice.cpp 
                ${PROJECT_SOURCE_DIR}/Math/complex.cpp 
-               ${PROJECT_SOURCE_DIR}/Action/action.cpp
-               ${PROJECT_SOURCE_DIR}/Action/puregauge.cpp
+               ${PROJECT_SOURCE_DIR}/Actions/action.cpp
+               ${PROJECT_SOURCE_DIR}/Actions/puregauge.cpp
                ${PROJECT_SOURCE_DIR}/Observables/observable.cpp
                ${PROJECT_SOURCE_DIR}/Observables/plaquette.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/inputparser.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/inputconf.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/outputconf.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/outputobs.cpp
-			   ${PROJECT_SOURCE_DIR}/Apps/app.cpp
-			   ${PROJECT_SOURCE_DIR}/Apps/gaugefieldfactory.cpp
+               ${PROJECT_SOURCE_DIR}/InputOutput/outputterm.cpp
+               ${PROJECT_SOURCE_DIR}/Apps/app.cpp
+               ${PROJECT_SOURCE_DIR}/Apps/gaugefieldfactory.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldreader.cpp
 )
 

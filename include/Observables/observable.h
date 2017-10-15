@@ -13,4 +13,3 @@ class Observable{
         virtual double value() = 0;
 };
 
-#include "plaquette.h"

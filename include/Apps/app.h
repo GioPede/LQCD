@@ -13,6 +13,7 @@ class App{
         virtual class Point& getLatticeSite(int x, int y, int z, int t) = 0;
         virtual class Parallel* getParallel() { return m_parallel; }
         virtual std::vector<int>& getSize() { return m_size; }
+        virtual std::vector<double>& getObsValues() { return m_obsValues; }
 
     private:
 		// member classes
@@ -21,6 +22,7 @@ class App{
 		class OutputConf* m_outputConf = nullptr;
 		class InputConf* m_inputConf = nullptr;
 		std::vector<class Observable*> m_obs;
+        std::vector<double> m_obsValues;
 		std::mt19937* m_random = nullptr;
 
 		// member variables

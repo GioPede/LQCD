@@ -14,13 +14,13 @@ Plaquette::Plaquette() : Observable(){
 void Plaquette::initObservable(Lattice* lattice){
     m_lat = lattice;
     m_size = m_lat->getSize();
+    m_norm = 1.0 / 18.0 / m_size[0] / m_size[1] / m_size[2] / m_size[3];
 }
 
 // COMPUTE THE VALUE OF THE PLAQUETTE ON THE WHOLE LATTICE
 void Plaquette::compute(){
     // loop through the sublattice
-    SU3 plaq;
-    double sum = 0;
+    m_value = 0;
     for(int mu = 0; mu < 4; mu++){
         for(int nu = mu + 1; nu < 4; nu++){
             for(int x = 0; x < m_size[0]; x++){
@@ -32,9 +32,9 @@ void Plaquette::compute(){
                 plaq *= m_lat->shift(x,y,z,t,nu, mu, 1);
                 plaq *= ~(m_lat->shift(x,y,z,t,mu, nu, 1));
                 plaq *= ~(*m_lat)(x,y,z,t)[nu];
-                sum += plaq.realTrace();
+                m_value += plaq.realTrace();
             }}}}
         }
     }
-    m_value =  sum / 18 / m_size[0] / m_size[1] / m_size[2] / m_size[3] ;
+    m_value *= m_norm;
 }

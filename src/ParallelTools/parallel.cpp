@@ -25,6 +25,7 @@ Parallel::Parallel(int argn, char* argv[]){
 
 // FINALIZE PARALLELIZATION
 void Parallel::finalize(){
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
 }
 

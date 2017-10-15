@@ -12,9 +12,9 @@ class InputParser{
         std::vector<std::string> inputConfList;
 
         int MCSteps, thermSteps, nConf;
-        char actionTag[256];
+        char actionTag[32];
         double beta, MCUpdateParameter;
-        const char* outDir;
+        char outDir[128];
         char startType;
 
     private:

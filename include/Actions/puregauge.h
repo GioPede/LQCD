@@ -1,5 +1,5 @@
 #pragma once
-#include "action.h"
+#include "Actions/action.h"
 
 // Implementation of the Pure Gauge Wilson Action
 class PureGauge : public Action {
@@ -10,6 +10,8 @@ class PureGauge : public Action {
                        struct SU3& newLink, struct SU3& constPart);
         struct SU3 computeConstant(int x, int y, int z, int t, int mu);
     private:
-        class Lattice* m_lat = nullptr;
         double m_beta;
+        class Lattice* m_lat = nullptr;
+        // auxiliary variables
+        struct SU3 constPart, staple, temp;
 };

@@ -16,10 +16,11 @@
 #include "InputOutput/outputconf.h"
 #include "InputOutput/inputconf.h"
 #include "Math/lattice.h"
-#include "Action/action.h"
-#include "Action/actionlist.h"
+#include "Actions/action.h"
+#include "Actions/actionlist.h"
 #include "Math/random.h"
 #include "Observables/observable.h"
+#include "Observables/observablelist.h"
 #include "ParallelTools/parallel.h"
 
 
@@ -71,7 +72,7 @@ void GaugeFieldReader::sampleConfigurations(){
     // check that current processor should be active
     if(m_parallel->isActive){
         for(int conf = 0; conf < m_inputConfList.size(); conf++){
-            m_inputConf->readConfiguration(m_inputConfList[conf]);
+            m_inputConf->readConfiguration(m_inputConfList[conf].c_str());
             for(int i = 0; i < m_obs.size(); i++)
                 m_obs[i]->compute();
             if(m_parallel->getRank() == 0) {
@@ -134,4 +135,5 @@ void GaugeFieldReader::setAction(Action* action){
 
 void GaugeFieldReader::addObservable(Observable *observable){
     m_obs.push_back(observable);
+    m_obsValues.push_back(0.0);
 }

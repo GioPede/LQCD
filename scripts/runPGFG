@@ -68,9 +68,11 @@ fi
 line1=$(sed -n '1{p;q;}' ${INPUT})
 line2=$(sed -n '2{p;q;}' ${INPUT})
 line4=$(sed -n '4{p;q;}' ${INPUT})
+line11=$(sed -n '11{p;q;}' ${INPUT})
 lattice=($line1)
 sublattice=($line2)
 hotcold=($line4)
+beta=($line11)
 PROCS=$(( ${lattice[0]} / ${sublattice[0]} * ${lattice[1]} / ${sublattice[1]} * ${lattice[2]} / ${sublattice[2]} * ${lattice[3]} / ${sublattice[3]} ))
 
 # Set default arguments
@@ -91,10 +93,10 @@ while :; do
 done
 
 # Create the output folder in "conf/"
-mkdir -p conf/${NAME}${hotcold[0]}
+mkdir -p conf/${NAME}_${hotcold[0]}_B${beta[0]}
 
 # Copy the input file to the output folder
-cp $INPUT conf/${NAME}${hotcold[0]}
+cp $INPUT conf/${NAME}_${hotcold[0]}_B${beta}
 
 # Write the SLURM launche file
 LAUNCHFILE="launcher.sh"

@@ -1,17 +1,6 @@
-#include "Utils/clusterspecifier.h"
-#include "Math/su3.h"
-#include "Math/point.h"
-#include "Math/lattice.h"
-#include "ParallelTools/parallel.h"
-#include "InputOutput/inputparser.h"
-#include "Apps/gaugefieldfactory.h"
-#include "Action/puregauge.h"
-#include "Observables/plaquette.h"
-#include <stdio.h>
-#include <vector>
-#include <string>
-#include <mpi.h>
-
+#include <cstdio>
+#include <chrono>
+#include "lqcd.h"
 
 /* ****************************************************************************
  *
@@ -32,7 +21,7 @@
 int main(int argn, char* argv[]) {
 
     // Start timer
-    clock_t tStart = clock();
+    auto start = std::chrono::system_clock::now();
 
     // Start MPI
     Parallel* parallelGeom = new Parallel(argn, argv);
@@ -47,21 +36,21 @@ int main(int argn, char* argv[]) {
     // Send Parameters to the Factory and init the system
     GaugeFieldFactory GFF(input, parallelGeom);
 
-    //Init the System
-    GFF.initGFF();
-
     // Start Generating Gauges
     GFF.generateConfigurations();
 
     // Finalize MPI and delete objects
-    MPI_Barrier(MPI_COMM_WORLD);
     parallelGeom->finalize();
 
-    if(parallelGeom->getRank() == 0)  printf("Total time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    // Stop timer and output
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsedTime = end-start;
+    if(parallelGeom->getRank() == 0)
+        printf("Total time taken: %.2fs\n", elapsedTime.count());
 
+    // End
     delete input;
     delete parallelGeom;
-
     return 0;
 }
 

@@ -14,7 +14,6 @@
 InputParser::InputParser(int argn, char* argv[]){
     // open the file
     m_inputFileName = argv[1];
-    outDir = argv[2];
     m_inputFile = fopen(m_inputFileName, "r+");
 
     for(int i = 3; i < argn; i++){
@@ -31,6 +30,7 @@ InputParser::InputParser(int argn, char* argv[]){
     readMCParams();
     readAction();
     readObservablesList();
+    sprintf(outDir, "%s_%c_B%.2lf", argv[2], startType, beta);
 }
 
 // Simple funtion that returns the number of lines in the file

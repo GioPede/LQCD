@@ -26,6 +26,7 @@ class GaugeFieldReader : public App {
         class Point& getLatticeSite(int x, int y, int z, int t);
         class Parallel* getParallel() { return m_parallel; }
         std::vector<int>& getSize() { return m_size; }
+        std::vector<double>& getObsValues() { return m_obsValues; }
 
     private:
         // member classes
@@ -35,6 +36,7 @@ class GaugeFieldReader : public App {
         class OutputConf* m_outputConf = nullptr;
         class InputConf* m_inputConf = nullptr;
         std::vector<class Observable*> m_obs;
+        std::vector<double> m_obsValues;
         std::mt19937_64* m_random = nullptr;
         std::vector<std::string> m_inputConfList;
         std::vector<int> m_size;

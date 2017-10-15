@@ -1,21 +1,9 @@
 #include <mpi/mpi.h>
 #include <vector>
 #include <cstdio>
-#include <string>
-#include <ctime>
-#include <cmath>
+#include <chrono>
 #include <random>
-#include "Math/random.h"
-#include "Apps/gaugefieldfactory.h"
-#include "InputOutput/inputparser.h"
-#include "InputOutput/outputconf.h"
-#include "InputOutput/inputconf.h"
-#include "Math/lattice.h"
-#include "Action/action.h"
-#include "Action/actionlist.h"
-#include "Math/random.h"
-#include "Observables/observable.h"
-#include "ParallelTools/parallel.h"
+#include "lqcd.h"
 
 std::uniform_real_distribution<double> randomUniform(0.0, 1.0);
 
@@ -34,8 +22,10 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
 
     // assign or create sublbclasses
     m_parallel = parallel;
+    m_outputObs  = new OutputObs(this);
+    m_outputTerm = new OutputTerm(this);
     m_outputConf = new OutputConf(this);
-    m_inputConf = new InputConf(this);
+    m_inputConf  = new InputConf(this);
 
     // PRNG initialization
     std::random_device rd;
@@ -48,22 +38,13 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
     // initialize observables list
     addObservable(new Plaquette());
 
-}
-
-
-// CREATE THE LATTICE AND INITIALIZE OBJECTS
-void GaugeFieldFactory::initGFF(){
-    m_seed = -time(NULL) + m_parallel->getRank();
+    // CREATE THE LATTICE AND INITIALIZE OBJECTS
     m_lat = new Lattice(m_size, m_parallel);
-    if(m_startType == 'H' || m_startType == 'h'){
+    if(m_startType == 'H' || m_startType == 'h')
         m_lat->setToRandom();
-        m_startType = 'H';
-    }
-    else if(m_startType == 'C' || m_startType == 'c'){
+    else if(m_startType == 'C' || m_startType == 'c')
         m_lat->setToUnity();
-        m_startType = 'C';
-    }
-	
+
     m_act->initAction(m_lat);
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->initObservable(m_lat);
@@ -75,121 +56,102 @@ void GaugeFieldFactory::initGFF(){
 void GaugeFieldFactory::generateConfigurations(){
     // check that current processor should be active
     if(m_parallel->isActive){
-        /*
-        clock_t start = clock();
-        for(int i = 0; i < 2000; i++){
-            MCUpdate();
-
-            if((i+1) % 200 == 0){
-                if(m_parallel->getRank() == 0) printf("Update Time:\t%f\n", double(clock()-start)/CLOCKS_PER_SEC);
-                start = clock();
-                clock_t startW = clock();
-                m_outputConf->writeConfiguration(i+1);
-                if(m_parallel->getRank() == 0) printf("Write Time:\t%f\n", double(clock()-startW)/CLOCKS_PER_SEC);
-            }
-        }
-
-        int x = 0, y = 0, z = 0, t = 3, mu = 2;
-
-        MCUpdate();
-        m_outputConf->writeConfiguration(0);
-        if(m_parallel->getRank() == 4) m_lat->m_lattice[x][y][z][t].m_links[mu].printSU3();
-        MCUpdate();
-        if(m_parallel->getRank() == 4) m_lat->m_lattice[x][y][z][t].m_links[mu].printSU3();
-
-        m_inputConf->readConfiguration(0);
-        if(m_parallel->getRank() == 4) m_lat->m_lattice[x][y][z][t].m_links[mu].printSU3();
-        */
-
 
         // initial state
-        for(int i = 0; i < m_obs.size(); i++)
-            m_obs[i]->compute();
-        if(m_parallel->getRank() == 0) {
-            printf("Initial State:\n");
-            for(int i = 0; i < m_obs.size(); i++)
-                printf("\t Plaq = %lf \n", m_obs[i]->value());
-        }
-        clock_t start = clock();
+        computeObservables();
+        m_outputTerm->printInitialConditions();
+
         // thermalization
-        for(int step = 0; step < m_thermSteps; step++){
-            //clock_t start = clock();
-            // perform an update
-            MCUpdate();
-
-            // compute and print information on current state
-            if(step % m_correlationSteps == 0){
-                for(int i = 0; i < m_obs.size(); i++)
-                    m_obs[i]->compute();
-                if(m_parallel->getRank() == 0) {
-                    printf("Thermalization Step: %i\n", step);
-                    for(int i = 0; i < m_obs.size(); i++){
-                        double temp, value = 0.0;
-                        for(int rank = 1; rank <  m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] * m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3] ; rank++){
-                            MPI_Recv(&temp, 1, MPI_DOUBLE, rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                            value += temp;
-                        }
-                        value += m_obs[i]-> value();
-                        printf("\t Plaq = %f \n", value / m_parallel->getSubBlocks()[0] / m_parallel->getSubBlocks()[1] / m_parallel->getSubBlocks()[2] / m_parallel->getSubBlocks()[3] );
-                    }
-                    printf("\t Current Acceptance Ratio: %f \n", double(m_accepted)/double(m_updates));
-                }
-
-                else{
-                    for(int i = 0; i < m_obs.size(); i++){
-                        double temp = m_obs[i]-> value();
-                        MPI_Send(&temp, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-                    }
-                }
-            }
-            //if(m_parallel->getRank() == 0) printf("update time: %f\n", double(clock()-start)/CLOCKS_PER_SEC);
-
-        }
-        if(m_parallel->getRank() == 0) printf("Thermalization Time: %f\n", double(clock()-start)/CLOCKS_PER_SEC);
+        thermalize();
 
         // generate and save configurations
-        int confNum = 0;
-        for(int step = 0; step < m_MCSteps; step++){
-            start = clock();
+        sampleConf();
 
-            // perform an update
-            MCUpdate();
+        m_outputObs->closeFile();
+    }
+}
 
-            // compute and print information on current state
-            if(step % m_correlationSteps == 0){
-                for(int i = 0; i < m_obs.size(); i++)
-                    m_obs[i]->compute();
-                if(m_parallel->getRank() == 0) {
-                    printf("Configuration Number: %i\n", step / m_correlationSteps);
-                    for(int i = 0; i < m_obs.size(); i++){
-                        double temp, value = 0.0;
-                        for(int rank = 1; rank <  m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] * m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3] ; rank++){
-                            MPI_Recv(&temp, 1, MPI_DOUBLE, rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                            value += temp;
-                        }
-                        value += m_obs[i]-> value();
-                        printf("\t Plaq = %f \n", value / m_parallel->getSubBlocks()[0] / m_parallel->getSubBlocks()[1] / m_parallel->getSubBlocks()[2] / m_parallel->getSubBlocks()[3] );
-                    }
-                    printf("\t Current Acceptance Ratio: %f \n", double(m_accepted)/double(m_updates));
-                }
+void GaugeFieldFactory::thermalize(){
+    for(int step = 1; step <= m_thermSteps; step++){
+        // perform an update
+        MCUpdate();
 
-                else{
-                    for(int i = 0; i < m_obs.size(); i++){
-                        double temp = m_obs[i]-> value();
-                        MPI_Send(&temp, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-                    }
-                }
-                if(m_parallel->getRank() == 0) printf("Update Time: %f\n", double(clock()-start)/CLOCKS_PER_SEC);
-
-                // write configuration
-                //m_outputConf->writeSubLattice(confNum);
-                m_outputConf->writeConfiguration(confNum);
-                confNum++;
-            }
-
+        // compute and print information on current state
+        if(step % m_correlationSteps == 0){
+            computeObservables();
+            m_outputTerm->printThermSteps(step, double(m_accepted)/double(m_updates));
         }
     }
 }
+
+void GaugeFieldFactory::sampleConf(){
+    int confNum = 0;
+    for(int step = 1; step <= m_MCSteps; step++){
+        // perform an update
+        MCUpdate();
+
+        // compute and print information on current state
+        if(step % m_correlationSteps == 0){
+            computeObservables();
+            m_outputTerm->printGenerationStep(confNum, double(m_accepted)/double(m_updates));
+            m_outputConf->writeConfiguration(confNum);
+            m_outputObs->writeObservables(step);
+            confNum++;
+        }
+    }
+}
+
+void GaugeFieldFactory::thermalizeTime(){
+    auto thermStart = std::chrono::system_clock::now();
+    auto thermStepStart = std::chrono::system_clock::now();
+    for(int step = 1; step <= m_thermSteps; step++){
+        // perform an update
+        MCUpdate();
+
+        // compute and print information on current state
+        if(step % m_correlationSteps == 0){
+            computeObservables();
+            m_outputTerm->printThermSteps(step, double(m_accepted)/double(m_updates));
+            std::chrono::duration<double> thermStepTime = std::chrono::system_clock::now()-thermStepStart;
+            if(m_parallel->getRank() == 0)
+                printf("\tThermalization Step Time:  %lf s\n\n", thermStepTime.count());
+            thermStepStart = std::chrono::system_clock::now();
+        }
+    }
+    std::chrono::duration<double> thermTime = std::chrono::system_clock::now()-thermStart;
+    if(m_parallel->getRank() == 0){
+        printf("Total Thermalization Steps: %i\n", m_thermSteps);
+        printf("Total Thermalization Time:  %lf s\n\n", thermTime.count());
+    }
+}
+
+void GaugeFieldFactory::sampleConfTime(){
+    int confNum = 0;
+    auto confUpdateStart = std::chrono::system_clock::now();
+    auto writeStart = std::chrono::system_clock::now();
+    for(int step = 1; step <= m_MCSteps; step++){
+        // perform an update
+        MCUpdate();
+
+        // compute and print information on current state
+        if(step % m_correlationSteps == 0){
+            computeObservables();
+            m_outputTerm->printGenerationStep(confNum, double(m_accepted)/double(m_updates));
+            std::chrono::duration<double> confUpdateTime = std::chrono::system_clock::now()-confUpdateStart;
+            if(m_parallel->getRank() == 0)
+                printf("\tConfiguration Update:  %lf s\n", confUpdateTime.count());
+            writeStart = std::chrono::system_clock::now();
+            m_outputConf->writeConfiguration(confNum);
+            m_outputObs->writeObservables(step);
+            std::chrono::duration<double> writeTime = std::chrono::system_clock::now()-writeStart;
+            if(m_parallel->getRank() == 0)
+                printf("\tWrite Time:            %lf s\n\n", writeTime.count());
+            confUpdateStart = std::chrono::system_clock::now();
+            confNum++;
+        }
+    }
+}
+
 
 // FUNCTION TO PERFORM ONE SINGLE UPDATE ON EVERY ELEMENT OF THE LATTICE
 void GaugeFieldFactory::MCUpdate(){
@@ -206,7 +168,6 @@ void GaugeFieldFactory::MCUpdate(){
 
 // TRIES TO UPDATE A SINGLE LINK 10 TIMES (HITS)
 void GaugeFieldFactory::updateLink(int x,int y, int z, int t, int mu){
-    SU3 newLink, constPart;
     // get the local staples' sum
     constPart = m_act->computeConstant(x, y, z, t, mu);
 
@@ -223,6 +184,16 @@ void GaugeFieldFactory::updateLink(int x,int y, int z, int t, int mu){
     }
 }
 
+void GaugeFieldFactory::computeObservables(){
+    for(int i = 0; i < m_obs.size(); i++){
+        m_obs[i]->compute();
+        double value = m_obs[i]->value();
+        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, m_parallel->getComm());
+        m_obsValues[i] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
+                          m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
+    }
+}
+
 
 // GETTERS AND SETTERS
 Point& GaugeFieldFactory::getLatticeSite(int x, int y, int z, int t){
@@ -231,4 +202,5 @@ Point& GaugeFieldFactory::getLatticeSite(int x, int y, int z, int t){
 
 void GaugeFieldFactory::addObservable(Observable *observable){
     m_obs.push_back(observable);
+    m_obsValues.push_back(0.0);
 }

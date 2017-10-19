@@ -21,6 +21,9 @@ struct SU3{
 
     // Get Real Component of Trace
     double realTrace();
+
+    // Get the exponential of the matrix
+    SU3 exp();
 };
 
 SU3 operator+(SU3 a, SU3 b);

@@ -385,3 +385,7 @@ double getMultSumTrace(SU3 &a, SU3 &b){
          + a.mat[12] * b.mat[4] - a.mat[13]*b.mat[5] +  a.mat[14] * b.mat[10] - a.mat[15]*b.mat[11] + a.mat[16] * b.mat[16] - a.mat[17]*b.mat[17];
 
 }
+
+SU3 SU3::exp(){
+
+}

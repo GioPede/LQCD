@@ -24,6 +24,8 @@ struct SU3{
 
     // Get the exponential of the matrix
     SU3 exp();
+
+    double imagTrace();
 };
 
 SU3 operator+(SU3 a, SU3 b);

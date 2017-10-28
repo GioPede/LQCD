@@ -2,7 +2,7 @@
 #ifndef LACONIA
 #include <mpi/mpi.h>
 #else
-#include <mpi.h>
+//#include <mpi.h>
 #endif
 #include <vector>
 #include <cstdio>
@@ -10,18 +10,7 @@
 #include <ctime>
 #include <cmath>
 #include <random>
-#include "Math/random.h"
-#include "Apps/gaugefieldreader.h"
-#include "InputOutput/inputparser.h"
-#include "InputOutput/outputconf.h"
-#include "InputOutput/inputconf.h"
-#include "Math/lattice.h"
-#include "Actions/action.h"
-#include "Actions/actionlist.h"
-#include "Math/random.h"
-#include "Observables/observable.h"
-#include "Observables/observablelist.h"
-#include "ParallelTools/parallel.h"
+#include "lqcd.h"
 
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS

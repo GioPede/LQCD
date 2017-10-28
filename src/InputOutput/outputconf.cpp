@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <mpi.h>
+#include <mpi/mpi.h>
 #include "InputOutput/outputconf.h"
 #include "Apps/app.h"
 #include "Math/lattice.h"

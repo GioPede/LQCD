@@ -14,6 +14,8 @@ class App{
         virtual class Parallel* getParallel() { return m_parallel; }
         virtual std::vector<int>& getSize() { return m_size; }
         virtual std::vector<double>& getObsValues() { return m_obsValues; }
+        virtual std::vector<class Observable*>& getObs() { return m_obs; }
+
 
     private:
 		// member classes

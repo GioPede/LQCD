@@ -1,5 +1,6 @@
 #include <cstdio>
-#include <mpi.h>
+#include <mpi/mpi.h>
+#include "Observables/observable.h"
 #include "InputOutput/outputobs.h"
 #include "Apps/app.h"
 #include "Math/lattice.h"
@@ -13,6 +14,10 @@ OutputObs::OutputObs(App *app){
         char fileName [128];
         sprintf(fileName, "%s/%s/observables.dat", OUT_PREFIX, m_app->getOutDir());
         m_file = fopen(fileName, "w+");
+        fprintf(m_file, "Step\t");
+        for(int i = 0; i < m_app->getObsValues().size(); i++)
+            fprintf(m_file, "%s\t", m_app->getObs()[i]->getName());
+        fprintf(m_file, "\n");
     }
 }
 

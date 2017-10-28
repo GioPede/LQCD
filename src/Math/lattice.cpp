@@ -3,7 +3,7 @@
 #include "Math/su3.h"
 #include "ParallelTools/parallel.h"
 #include <cstdio>
-#include <mpi.h>
+#include <mpi/mpi.h>
 
 Lattice::Lattice(std::vector<int> size){
     m_size = size;

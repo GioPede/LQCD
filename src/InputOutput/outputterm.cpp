@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <mpi.h>
+#include <mpi/mpi.h>
 #include "InputOutput/outputterm.h"
 #include "Apps/app.h"
 #include "Math/lattice.h"
@@ -26,7 +26,7 @@ void OutputTerm::printThermSteps(int step, double acceptRatio){
     if(m_write){
         printf("Thermalization Step %4i\n", step);
         for(int i = 0; i < m_app->getObsValues().size(); i++)
-            printf("\tPlaq = %lf \n", m_app->getObsValues()[i]);
+            printf("\t%s\t = %lf \n", m_app->getObs()[i]->getName(), m_app->getObsValues()[i]);
         printf("\tAccept. Ratio = %lf\n", acceptRatio);
     }
 }
@@ -35,7 +35,7 @@ void OutputTerm::printGenerationStep(int confNum, double acceptRatio){
     if(m_write){
         printf("Configuration Number %4i\n", confNum);
         for(int i = 0; i < m_app->getObsValues().size(); i++)
-            printf("\tPlaq = %lf \n", m_app->getObsValues()[i]);
+            printf("\t%s\t = %lf \n", m_app->getObs()[i]->getName(), m_app->getObsValues()[i]);
         printf("\tAccept. Ratio = %lf\n", acceptRatio);
     }
 }

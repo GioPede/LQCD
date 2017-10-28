@@ -11,5 +11,6 @@ class Observable{
         virtual void initObservable(class Lattice *lattice) = 0;
         virtual void compute() = 0;
         virtual double value() = 0;
+        virtual const char* getName() = 0;
 };
 

@@ -179,6 +179,10 @@ double SU3::realTrace(){
     return mat[0] + mat[8] + mat[16];
 }
 
+double SU3::imagTrace(){
+    return mat[1] + mat[9] + mat[17];
+}
+
 void SU3::setSU3Random(){
     complex v1[3], v2[3];
     complex u1[3], u2[3], u3[3];

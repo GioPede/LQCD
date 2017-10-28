@@ -27,6 +27,8 @@ class GaugeFieldReader : public App {
         class Parallel* getParallel() { return m_parallel; }
         std::vector<int>& getSize() { return m_size; }
         std::vector<double>& getObsValues() { return m_obsValues; }
+        std::vector<class Observable*>& getObs() { return m_obs; }
+
 
     private:
         // member classes

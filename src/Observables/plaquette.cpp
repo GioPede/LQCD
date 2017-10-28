@@ -4,10 +4,16 @@
 #include "Math/lattice.h"
 #include <cstdio>
 #include <cmath>
+#include <string>
 
 // CONSTRUCTOR
 Plaquette::Plaquette() : Observable(){
+    m_name = "Plaquette";
+}
 
+// NAME
+const char* Plaquette::getName(){
+    return m_name.c_str();
 }
 
 // INITIALIZER

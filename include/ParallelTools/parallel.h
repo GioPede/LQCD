@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <mpi.h>
+#include <mpi/mpi.h>
 
 class Parallel{
     public:

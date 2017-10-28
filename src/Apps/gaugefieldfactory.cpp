@@ -37,6 +37,7 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
 
     // initialize observables list
     addObservable(new Plaquette());
+    addObservable(new TopologicalCharge());
 
     // CREATE THE LATTICE AND INITIALIZE OBJECTS
     m_lat = new Lattice(m_size, m_parallel);

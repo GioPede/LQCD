@@ -1,6 +1,6 @@
 # Specify the minimum version for CMake
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 2.8)
 
 # Project's name
 project(LatticeQCD)
@@ -29,6 +29,7 @@ set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
                ${PROJECT_SOURCE_DIR}/Actions/puregauge.cpp
                ${PROJECT_SOURCE_DIR}/Observables/observable.cpp
                ${PROJECT_SOURCE_DIR}/Observables/plaquette.cpp
+               ${PROJECT_SOURCE_DIR}/Observables/topologicalcharge.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/inputparser.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/inputconf.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/outputconf.cpp

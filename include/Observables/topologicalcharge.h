@@ -4,9 +4,9 @@
 #include "observable.h"
 #include "Math/latticemath.h"
 
-class Plaquette : public Observable {
+class TopologicalCharge : public Observable {
     public:
-        Plaquette();
+        TopologicalCharge();
         void initObservable(Lattice *lattice);
         void compute();
         double value() { return m_value; }
@@ -17,6 +17,7 @@ class Plaquette : public Observable {
         double m_value = 0.0;
         // auxiliary variables
         double m_norm;
-        SU3 plaq;
+        SU3 Gmn, Grs;
         std::string m_name;
+
 };

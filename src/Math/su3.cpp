@@ -3,7 +3,8 @@
 #include "Math/random.h"
 #include <ctime>
 #include <cmath>
-#include <stdio.h>
+#include <cstdio>
+#include <utility>
 
 /*******************************************************
 * Functions between SU3 elements, defined as arrays.
@@ -17,125 +18,18 @@ SU3 R, S, T;
 double x[4];
 double norm;
 
-//////  BINARY OPERATIONS  //////
-
-// Sum between SU3
-SU3 operator+(SU3 a, SU3 b){
-    SU3 c;
-    for(int i = 0; i < 18; i++)
-        c.mat[i] = a.mat[i] + b.mat[i];
-    return c;
+SU3::SU3() noexcept{
 }
 
-void operator+=(SU3&a, SU3 b){
-    for(int i = 0; i < 18; i++)
-        a.mat[i] += b.mat[i];
+SU3::SU3(double value) noexcept{
+    for(auto& i : mat)
+        i = value;
 }
 
-// Subtraction between SU3
-SU3 operator-(SU3 a, SU3 b){
-    SU3 c;
-    for(int i = 0; i < 18; i++)
-        c.mat[i] = a.mat[i] - b.mat[i];
-    return c;
+SU3::SU3(SU3 const & source) noexcept : mat(source.mat){
 }
 
-void operator-=(SU3&a, SU3 b){
-    for(int i = 0; i < 18; i++)
-        a.mat[i] -= b.mat[i];
-}
-
-// Multiplication between SU3
-SU3 operator*(SU3 a, SU3 b){
-    SU3 c;
-    //REAL
-    c.mat[0] =  a.mat[0] * b.mat[0] - a.mat[1]*b.mat[1] + a.mat[2] * b.mat[6] - a.mat[3]*b.mat[7] + a.mat[4] * b.mat[12] - a.mat[5]*b.mat[13];
-    c.mat[2] =  a.mat[0] * b.mat[2] - a.mat[1]*b.mat[3] + a.mat[2] * b.mat[8] - a.mat[3]*b.mat[9] + a.mat[4] * b.mat[14] - a.mat[5]*b.mat[15];
-    c.mat[4] =  a.mat[0] * b.mat[4] - a.mat[1]*b.mat[5] + a.mat[2] * b.mat[10] - a.mat[3]*b.mat[11] + a.mat[4] * b.mat[16] - a.mat[5]*b.mat[17];
-    c.mat[6] =  a.mat[6] * b.mat[0] - a.mat[7]*b.mat[1] + a.mat[8] * b.mat[6] - a.mat[9]*b.mat[7] + a.mat[10] * b.mat[12] - a.mat[11]*b.mat[13];
-    c.mat[8] =  a.mat[6] * b.mat[2] - a.mat[7]*b.mat[3] + a.mat[8] * b.mat[8] - a.mat[9]*b.mat[9] + a.mat[10] * b.mat[14] - a.mat[11]*b.mat[15];
-    c.mat[10] =  a.mat[6] * b.mat[4] - a.mat[7]*b.mat[5] + a.mat[8] * b.mat[10] - a.mat[9]*b.mat[11] + a.mat[10] * b.mat[16] - a.mat[11]*b.mat[17];
-    c.mat[12] =  a.mat[12] * b.mat[0] - a.mat[13]*b.mat[1] + a.mat[14] * b.mat[6] - a.mat[15]*b.mat[7] + a.mat[16] * b.mat[12] - a.mat[17]*b.mat[13];
-    c.mat[14] =  a.mat[12] * b.mat[2] - a.mat[13]*b.mat[3] + a.mat[14] * b.mat[8] - a.mat[15]*b.mat[9] + a.mat[16] * b.mat[14] - a.mat[17]*b.mat[15];
-    c.mat[16] =  a.mat[12] * b.mat[4] - a.mat[13]*b.mat[5] +  a.mat[14] * b.mat[10] - a.mat[15]*b.mat[11] + a.mat[16] * b.mat[16] - a.mat[17]*b.mat[17];
-
-
-    // COMPLEX
-    c.mat[1] =  a.mat[0] * b.mat[1] + a.mat[1]*b.mat[0] + a.mat[2] * b.mat[7] + a.mat[3]*b.mat[6] + a.mat[4] * b.mat[13] + a.mat[5]*b.mat[12];
-    c.mat[3] =  a.mat[0] * b.mat[3] + a.mat[1]*b.mat[2] + a.mat[2] * b.mat[9] + a.mat[3]*b.mat[8] + a.mat[4] * b.mat[15] + a.mat[5]*b.mat[14];
-    c.mat[5] =  a.mat[0] * b.mat[5] + a.mat[1]*b.mat[4] + a.mat[2] * b.mat[11] + a.mat[3]*b.mat[10] + a.mat[4] * b.mat[17] + a.mat[5]*b.mat[16];
-    c.mat[7] =  a.mat[6] * b.mat[1] + a.mat[7]*b.mat[0] + a.mat[8] * b.mat[7] + a.mat[9]*b.mat[6] + a.mat[10] * b.mat[13] + a.mat[11]*b.mat[12];
-    c.mat[9] =  a.mat[6] * b.mat[3] + a.mat[7]*b.mat[2] + a.mat[8] * b.mat[9] + a.mat[9]*b.mat[8] + a.mat[10] * b.mat[15] + a.mat[11]*b.mat[14];
-    c.mat[11] =  a.mat[6] * b.mat[5] + a.mat[7]*b.mat[4] + a.mat[8] * b.mat[11] + a.mat[9]*b.mat[10] + a.mat[10] * b.mat[17] + a.mat[11]*b.mat[16];
-    c.mat[13] =  a.mat[12] * b.mat[1] + a.mat[13]*b.mat[0] + a.mat[14] * b.mat[7] + a.mat[15]*b.mat[6] + a.mat[16] * b.mat[13] + a.mat[17]*b.mat[12];
-    c.mat[15] =  a.mat[12] * b.mat[3] + a.mat[13]*b.mat[2] + a.mat[14] * b.mat[9] + a.mat[15]*b.mat[8] + a.mat[16] * b.mat[15] + a.mat[17]*b.mat[14];
-    c.mat[17] =  a.mat[12] * b.mat[5] + a.mat[13]*b.mat[4] + a.mat[14] * b.mat[11] + a.mat[15]*b.mat[10] + a.mat[16] * b.mat[17] + a.mat[17]*b.mat[16];
-
-
-    /*
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            c.mat[2 * (3*i + j)] = 0;
-            c.mat[2 * (3*i + j) + 1] = 0;
-            for(int k = 0; k < 3; k++){
-                c.mat[2 * (3*i + j)] += a.mat[2 * (3*i + k)] * b.mat[2 * (3*k + j)]
-                                       -a.mat[2 * (3*i + k) + 1] * b.mat[2 * (3*k + j) + 1];
-                c.mat[2 * (3*i + j) + 1] += a.mat[2 * (3*i + k)] * b.mat[2 * (3*k + j) + 1]
-                                           +a.mat[2 * (3*i + k) + 1] * b.mat[2 * (3*k + j)];
-
-            }
-        }
-    }*/
-    return c;
-}
-
-void operator*=(SU3&a, SU3 b){
-    SU3 c;
-    //REAL
-    c.mat[0] =  a.mat[0] * b.mat[0] - a.mat[1]*b.mat[1] + a.mat[2] * b.mat[6] - a.mat[3]*b.mat[7] + a.mat[4] * b.mat[12] - a.mat[5]*b.mat[13];
-    c.mat[2] =  a.mat[0] * b.mat[2] - a.mat[1]*b.mat[3] + a.mat[2] * b.mat[8] - a.mat[3]*b.mat[9] + a.mat[4] * b.mat[14] - a.mat[5]*b.mat[15];
-    c.mat[4] =  a.mat[0] * b.mat[4] - a.mat[1]*b.mat[5] + a.mat[2] * b.mat[10] - a.mat[3]*b.mat[11] + a.mat[4] * b.mat[16] - a.mat[5]*b.mat[17];
-    c.mat[6] =  a.mat[6] * b.mat[0] - a.mat[7]*b.mat[1] + a.mat[8] * b.mat[6] - a.mat[9]*b.mat[7] + a.mat[10] * b.mat[12] - a.mat[11]*b.mat[13];
-    c.mat[8] =  a.mat[6] * b.mat[2] - a.mat[7]*b.mat[3] + a.mat[8] * b.mat[8] - a.mat[9]*b.mat[9] + a.mat[10] * b.mat[14] - a.mat[11]*b.mat[15];
-    c.mat[10] =  a.mat[6] * b.mat[4] - a.mat[7]*b.mat[5] + a.mat[8] * b.mat[10] - a.mat[9]*b.mat[11] + a.mat[10] * b.mat[16] - a.mat[11]*b.mat[17];
-    c.mat[12] =  a.mat[12] * b.mat[0] - a.mat[13]*b.mat[1] + a.mat[14] * b.mat[6] - a.mat[15]*b.mat[7] + a.mat[16] * b.mat[12] - a.mat[17]*b.mat[13];
-    c.mat[14] =  a.mat[12] * b.mat[2] - a.mat[13]*b.mat[3] + a.mat[14] * b.mat[8] - a.mat[15]*b.mat[9] + a.mat[16] * b.mat[14] - a.mat[17]*b.mat[15];
-    c.mat[16] =  a.mat[12] * b.mat[4] - a.mat[13]*b.mat[5] +  a.mat[14] * b.mat[10] - a.mat[15]*b.mat[11] + a.mat[16] * b.mat[16] - a.mat[17]*b.mat[17];
-
-
-    // COMPLEX
-    c.mat[1] =  a.mat[0] * b.mat[1] + a.mat[1]*b.mat[0] + a.mat[2] * b.mat[7] + a.mat[3]*b.mat[6] + a.mat[4] * b.mat[13] + a.mat[5]*b.mat[12];
-    c.mat[3] =  a.mat[0] * b.mat[3] + a.mat[1]*b.mat[2] + a.mat[2] * b.mat[9] + a.mat[3]*b.mat[8] + a.mat[4] * b.mat[15] + a.mat[5]*b.mat[14];
-    c.mat[5] =  a.mat[0] * b.mat[5] + a.mat[1]*b.mat[4] + a.mat[2] * b.mat[11] + a.mat[3]*b.mat[10] + a.mat[4] * b.mat[17] + a.mat[5]*b.mat[16];
-    c.mat[7] =  a.mat[6] * b.mat[1] + a.mat[7]*b.mat[0] + a.mat[8] * b.mat[7] + a.mat[9]*b.mat[6] + a.mat[10] * b.mat[13] + a.mat[11]*b.mat[12];
-    c.mat[9] =  a.mat[6] * b.mat[3] + a.mat[7]*b.mat[2] + a.mat[8] * b.mat[9] + a.mat[9]*b.mat[8] + a.mat[10] * b.mat[15] + a.mat[11]*b.mat[14];
-    c.mat[11] =  a.mat[6] * b.mat[5] + a.mat[7]*b.mat[4] + a.mat[8] * b.mat[11] + a.mat[9]*b.mat[10] + a.mat[10] * b.mat[17] + a.mat[11]*b.mat[16];
-    c.mat[13] =  a.mat[12] * b.mat[1] + a.mat[13]*b.mat[0] + a.mat[14] * b.mat[7] + a.mat[15]*b.mat[6] + a.mat[16] * b.mat[13] + a.mat[17]*b.mat[12];
-    c.mat[15] =  a.mat[12] * b.mat[3] + a.mat[13]*b.mat[2] + a.mat[14] * b.mat[9] + a.mat[15]*b.mat[8] + a.mat[16] * b.mat[15] + a.mat[17]*b.mat[14];
-    c.mat[17] =  a.mat[12] * b.mat[5] + a.mat[13]*b.mat[4] + a.mat[14] * b.mat[11] + a.mat[15]*b.mat[10] + a.mat[16] * b.mat[17] + a.mat[17]*b.mat[16];
-
-    /*
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            c.mat[2 * (3*i + j)] = 0;
-            c.mat[2 * (3*i + j) + 1] = 0;
-            for(int k = 0; k < 3; k++){
-                c.mat[2 * (3*i + j)] += a.mat[2 * (3*i + k)] * b.mat[2 * (3*k + j)]
-                                       -a.mat[2 * (3*i + k) + 1] * b.mat[2 * (3*k + j) + 1];
-                c.mat[2 * (3*i + j) + 1] += a.mat[2 * (3*i + k)] * b.mat[2 * (3*k + j) + 1]
-                                           +a.mat[2 * (3*i + k) + 1] * b.mat[2 * (3*k + j)];
-
-            }
-        }
-    }*/
-    a = c;
-}
-
-SU3 operator*(SU3 a, double b){
-    SU3 c;
-    for(int i = 0; i < 18; i++)
-        c.mat[i] = b * a.mat[i];
-    return c;
+SU3::SU3(SU3 && source) noexcept : mat(source.mat){
 }
 
 // Hermitean Conjugate
@@ -147,7 +41,7 @@ SU3 operator~(SU3 a){
             c.mat[2 * (3*i + j) + 1] = -a.mat[2 * (3*j + i) + 1];
         }
     }
-    return c;
+    return std::move(c);
 }
 
 void SU3::printSU3(){
@@ -182,6 +76,9 @@ double SU3::realTrace(){
 double SU3::imagTrace(){
     return mat[1] + mat[9] + mat[17];
 }
+
+
+
 
 void SU3::setSU3Random(){
     complex v1[3], v2[3];
@@ -318,7 +215,7 @@ SU3 getRandomTransformation(double epsilon){
     T.mat[11] = x[1];
     T.mat[15] = x[1];
 
-    return R*S*T;
+    return std::move(R*S*T);
 }
 
 /*

@@ -111,7 +111,7 @@ SU3 Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftSi
         MPI_Sendrecv(m_lattice[sendIdx[0]][sendIdx[1]][sendIdx[2]][sendIdx[3]][mu].mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, mpiShiftSign), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, abs(mpiShiftSign-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return msg;
+        return std::move(msg);
     }
 }
 
@@ -159,7 +159,7 @@ SU3 Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftS
         MPI_Sendrecv(m_lattice[sendIdx[0]][sendIdx[1]][sendIdx[2]][sendIdx[3]][mu].mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, mpiShiftSign), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, abs(mpiShiftSign-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return msg;
+        return std::move(msg);
     }
 
     if(mpiShifts == 2){
@@ -191,6 +191,6 @@ SU3 Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftS
                      m_parallel->getSecondNeighbor(mpiShiftDir, mpiShiftSign, mpiShiftDir2, mpiShiftSign2), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, m_parallel->getSecondNeighbor(mpiShiftDir, abs(mpiShiftSign-1), mpiShiftDir2, abs(mpiShiftSign2-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return msg;
+        return std::move(msg);
     }
 }

@@ -33,7 +33,19 @@ SU3::SU3(SU3 && source) noexcept : mat(source.mat){
 }
 
 // Hermitean Conjugate
-SU3 operator~(SU3 a){
+SU3 operator~(SU3& a){
+    SU3 c;
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            c.mat[2 * (3*i + j)] = a.mat[2 * (3*j + i)];
+            c.mat[2 * (3*i + j) + 1] = -a.mat[2 * (3*j + i) + 1];
+        }
+    }
+    return std::move(c);
+}
+
+// Hermitean Conjugate
+SU3 operator~(SU3&& a){
     SU3 c;
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){

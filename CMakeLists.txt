@@ -38,17 +38,20 @@ set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
                ${PROJECT_SOURCE_DIR}/Apps/app.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldfactory.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldreader.cpp
+               ${PROJECT_SOURCE_DIR}/Apps/wilsonflow.cpp
 )
 
 add_library( sharedResources ${SHARED_SRC} )
 
 # Set executables
 add_executable(pgfg ${PROJECT_SOURCE_DIR}/MainPrograms/pgfg.cpp)
-add_executable(gfr ${PROJECT_SOURCE_DIR}/MainPrograms/gfr.cpp)
+add_executable(gfr  ${PROJECT_SOURCE_DIR}/MainPrograms/gfr.cpp)
+add_executable(flow ${PROJECT_SOURCE_DIR}/MainPrograms/flow.cpp)
 #add_executable(gfe ${PROJECT_SOURCE_DIR}/MainPrograms/gfe.cpp)
 
 target_link_libraries( pgfg sharedResources )
-target_link_libraries( gfr sharedResources )
+target_link_libraries( gfr  sharedResources )
+target_link_libraries( flow sharedResources )
 #target_link_libraries( gfe sharedResources )
 
 # Set compiler and flags

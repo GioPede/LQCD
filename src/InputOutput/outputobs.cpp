@@ -36,4 +36,22 @@ void OutputObs::closeFile(){
     }
 }
 
+void OutputObs::writeFlowObservables(int confNum, std::vector<std::vector<double>> obsMatrix){
+    if(m_write){
+        char fileName [128];
+        sprintf(fileName, "%s/%s/flow/conf%04d.dat", OUT_PREFIX, m_app->getOutDir(), confNum);
+        FILE* flowOut = fopen(fileName, "w+");
+        fprintf(flowOut, "Flow Time\t");
+        for(int i = 0; i < m_app->getObsValues().size(); i++)
+            fprintf(flowOut, "%s\t", m_app->getObs()[i]->getName());
+        fprintf(flowOut, "\n");
+
+        for(int i = 0; i < obsMatrix.size(); i++){
+            for(int j = 0; j < obsMatrix[i].size(); j++)
+                fprintf(flowOut, "%lf\t", obsMatrix[i][j]);
+            fprintf(flowOut, "\n");
+        }
+        fclose(flowOut);
+    }
+}
 

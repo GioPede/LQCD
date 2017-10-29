@@ -190,9 +190,9 @@ void GaugeFieldFactory::computeObservables(){
         m_obs[i]->compute();
         double value = m_obs[i]->value();
         MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, m_parallel->getComm());
-        m_obsValues[i] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
-                          m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
     }
+    m_obsValues[0] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
+                      m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
 }
 
 

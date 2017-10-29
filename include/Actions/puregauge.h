@@ -8,7 +8,7 @@ class PureGauge : public Action {
         void initAction(class Lattice* lattice);
         double compute(int x, int y, int z, int t, int mu,
                        struct SU3& newLink, struct SU3& constPart);
-        struct SU3 computeConstant(int x, int y, int z, int t, int mu);
+        struct SU3& computeConstant(int x, int y, int z, int t, int mu);
     private:
         double m_beta;
         class Lattice* m_lat = nullptr;

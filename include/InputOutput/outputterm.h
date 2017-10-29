@@ -7,7 +7,9 @@ class OutputTerm{
         void printInitialConditions();
         void printThermSteps(int step, double acceptRatio);
         void printGenerationStep(int confNum, double acceptRatio);
-    private:
+        void writeObservables(int confNum);
+        void writeFlowObservables(std::vector<double> obsVector);
+private:
         class App* m_app = nullptr;
         bool m_write;
 };

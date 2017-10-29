@@ -26,7 +26,7 @@ double PureGauge::compute(int x, int y, int z, int t, int mu,
 
 
 // COMPUTE THE SUM OF THE STAPLES OF A GIVEN LINK
-SU3 PureGauge::computeConstant(int x, int y, int z, int t, int mu){
+SU3& PureGauge::computeConstant(int x, int y, int z, int t, int mu){
     constPart.setSU3Zero();
     for(int nu = 0; nu < 4; nu++){
         if(nu != mu){

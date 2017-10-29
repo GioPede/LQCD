@@ -40,3 +40,19 @@ void OutputTerm::printGenerationStep(int confNum, double acceptRatio){
     }
 }
 
+void OutputTerm::writeObservables(int confNum){
+    if(m_write){
+        printf("Configuration Number %4i\n", confNum);
+        for(int i = 0; i < m_app->getObsValues().size(); i++)
+            printf("\t%s\t = %lf \n", m_app->getObs()[i]->getName(), m_app->getObsValues()[i]);
+    }
+}
+
+void OutputTerm::writeFlowObservables(std::vector<double> obsVector){
+    if(m_write){
+        printf("Flow Time %2.2lf\n", obsVector[0]);
+        for(int i = 1; i < obsVector.size(); i++)
+            printf("\t%s\t = %lf \n", m_app->getObs()[i-1]->getName(), obsVector[i]);
+    }
+}
+

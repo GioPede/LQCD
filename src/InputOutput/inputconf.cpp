@@ -10,6 +10,7 @@
 InputConf::InputConf(App *app){
     m_app = app;
     m_subSize.resize(4); m_subBlock.resize(4); m_fullSize.resize(4);
+
     for(int i = 0; i < 4; i++){
         m_subBlock[i] = m_app->getParallel()->getRankSubBlock()[i];
         m_fullSize[i] = m_app->getParallel()->getFullSize()[i];
@@ -46,6 +47,7 @@ void InputConf::readConfiguration(const char* inputFile){
 
     // Open file
     m_app->getParallel()->openFile(input, inputFile);
+
 
     for(int t = 0; t < m_subSize[3]; t++){
         startPointT = ( m_fullSize[0]*m_fullSize[1]*m_fullSize[2] ) * ( m_subBlock[3]*m_subSize[3] + t);

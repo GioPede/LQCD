@@ -29,6 +29,7 @@ set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
                ${PROJECT_SOURCE_DIR}/Actions/puregauge.cpp
                ${PROJECT_SOURCE_DIR}/Observables/observable.cpp
                ${PROJECT_SOURCE_DIR}/Observables/plaquette.cpp
+               ${PROJECT_SOURCE_DIR}/Observables/energydensity.cpp
                ${PROJECT_SOURCE_DIR}/Observables/topologicalcharge.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/inputparser.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/inputconf.cpp

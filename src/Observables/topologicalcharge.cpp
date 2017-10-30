@@ -67,7 +67,7 @@ void TopologicalCharge::compute(){
             A *= (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1));
             A *= ~(*m_lat)(x,y,z,t)[mu];
             Gmn+=A;
-            Gmn=Gmn*0.25;
+            Gmn*=0.25;
             for(int i = 0; i < 18; i+=2)
                 Gmn.mat[i] = 0;
 
@@ -104,7 +104,7 @@ void TopologicalCharge::compute(){
                 A *= (m_lat->shift2 (x,y,z,t,sig,sig,-1,rho,1));
                 A *= ~(*m_lat)(x,y,z,t)[rho];
                 Grs+=A;
-                Grs=Grs*0.25;
+                Grs*=0.25;
                 for(int i = 0; i < 18; i+=2)
                     Grs.mat[i] = 0;
                 // multiply and sum
@@ -112,9 +112,9 @@ void TopologicalCharge::compute(){
             }}}}
         }}}
     }}}}
-    m_value *= m_norm * 0.0625* 0.0625* 0.0625* 0.0625;
+    m_value *= m_norm; //* 0.0625* 0.0625* 0.0625* 0.0625;
 
-    m_value = 0.197 / 0.0625*pow(0.197*1.5, 0.25) * pow(m_value*m_value, 0.25);
+   // m_value = 0.197 / 0.0625*pow(0.197*1.5, 0.25) * pow(m_value*m_value, 0.25);
 
 }
 

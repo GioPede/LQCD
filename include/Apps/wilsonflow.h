@@ -42,7 +42,7 @@ class WilsonFlow : public App {
         std::vector<std::string> m_inputConfList;
         std::vector<int> m_size;
 
-
+        struct SU3 omega;
         // member variables
         int m_MCSteps;
         int m_correlationSteps;

@@ -7,6 +7,10 @@
 
 #include <utility>
 
+// ???
+// #define TAOCPP_NO_RVALUE_REFERENCE_RESULTS
+
+
 #ifndef TAOCPP_NO_RVALUE_REFERENCE_RESULTS
 #define TAOCPP_OPERATORS_BASIC_OP( name, op )                           \
   template< typename T, typename U = T >                                \

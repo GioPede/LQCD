@@ -31,9 +31,6 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
     std::random_device rd;
     m_random = new std::mt19937(m_parallel->getRank()+rd());
 
-    // initialize action
-    if(std::string(input->actionTag) == "puregauge")
-        m_act = new PureGauge(input->beta);
 
     // initialize observables list
     addObservable(new Plaquette());
@@ -45,11 +42,13 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
         m_lat->setToRandom();
     else if(m_startType == 'C' || m_startType == 'c')
         m_lat->setToUnity();
-
-    m_act->initAction(m_lat);
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->initObservable(m_lat);
     }
+
+    // initialize action
+    if(std::string(input->actionTag) == "puregauge")
+        m_act = new PureGauge(m_lat, input->beta);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'

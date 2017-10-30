@@ -16,6 +16,7 @@
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
 WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
     addObservable(new Plaquette());
+    addObservable(new EnergyDensity());
     addObservable(new TopologicalCharge());
     m_size = input->subLatticeSize;
 
@@ -27,18 +28,18 @@ WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
     m_outputTerm = new OutputTerm(this);
     m_inputConf  = new InputConf(this);
 
-    // initialize action
-    if(std::string(input->actionTag) == "puregauge")
-        setAction(new PureGauge(input->beta));
-
     m_lat = new Lattice(m_size, m_parallel);
     m_Z0 = new Lattice(m_size, m_parallel);
     m_Z1 = new Lattice(m_size, m_parallel);
     m_Z2 = new Lattice(m_size, m_parallel);
-    m_act->initAction(m_lat);
+
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->initObservable(m_lat);
     }
+
+    // initialize action
+    if(std::string(input->actionTag) == "puregauge")
+        m_act = new PureGauge(m_lat, input->beta);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'
@@ -46,7 +47,7 @@ WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
 void WilsonFlow::flowConfigurations(){
     // check that current processor should be active
     int confNum = 0;
-    double epsilon = 0.02;
+    double epsilon = 0.005;
     if(m_parallel->isActive){
         for(auto& conf : m_inputConfList){
             m_inputConf->readConfiguration(conf.c_str());
@@ -80,12 +81,96 @@ void WilsonFlow::applyWilsonFlow(int confNum, double epsilon){
 }
 
 void WilsonFlow::flowStep(double epsilon){
+    // compute Z0
     for(int x = 0; x < m_size[0]; x++){
     for(int y = 0; y < m_size[1]; y++){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
+            omega = (*m_lat)(x,y,z,t)[mu]*m_act->computeConstant(x, y, z, t, mu);
+            double tr = (omega-~omega).imagTrace()/6.0;
+            omega = (omega-~omega) * 0.5;
+            for(int i = 1; i < 18; i+=2)
+                omega.mat[i] -= tr;
+            for(int i = 0; i < 18; i+=2){
+                double temp = omega.mat[i];
+                omega.mat[i] = -omega.mat[i+1] * 0.5;
+                omega.mat[i+1] = temp * 0.5;
+            }
+            (*m_Z0)(x,y,z,t)[mu] = omega;
+        }
+    }}}}
 
+    // compute W1
+    for(int x = 0; x < m_size[0]; x++){
+    for(int y = 0; y < m_size[1]; y++){
+    for(int z = 0; z < m_size[2]; z++){
+    for(int t = 0; t < m_size[3]; t++){
+        for(int mu = 0; mu < 4; mu++){
+            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z0)(x,y,z,t)[mu] * epsilon * (1.0/4.0));
+        }
+    }}}}
+
+    // compute Z1
+    for(int x = 0; x < m_size[0]; x++){
+    for(int y = 0; y < m_size[1]; y++){
+    for(int z = 0; z < m_size[2]; z++){
+    for(int t = 0; t < m_size[3]; t++){
+        for(int mu = 0; mu < 4; mu++){
+            omega = (*m_lat)(x,y,z,t)[mu]*m_act->computeConstant(x, y, z, t, mu);
+            double tr = (omega-~omega).imagTrace()/6.0;
+            omega = (omega-~omega) * 0.5;
+            for(int i = 1; i < 18; i+=2)
+                omega.mat[i] -= tr;
+            for(int i = 0; i < 18; i+=2){
+                double temp = omega.mat[i];
+                omega.mat[i] = -omega.mat[i+1] * 0.5;
+                omega.mat[i+1] = temp * 0.5;
+            }
+            (*m_Z1)(x,y,z,t)[mu] = omega;
+        }
+    }}}}
+
+    // compute W2
+    for(int x = 0; x < m_size[0]; x++){
+    for(int y = 0; y < m_size[1]; y++){
+    for(int z = 0; z < m_size[2]; z++){
+    for(int t = 0; t < m_size[3]; t++){
+        for(int mu = 0; mu < 4; mu++){
+            (*m_lat)(x,y,z,t)[mu] *= exp(((*m_Z1)(x,y,z,t)[mu]*(8.0/9.0)
+                                         -(*m_Z0)(x,y,z,t)[mu]*(17.0/36.0))*epsilon);
+        }
+    }}}}
+
+    // compute Z2
+    for(int x = 0; x < m_size[0]; x++){
+    for(int y = 0; y < m_size[1]; y++){
+    for(int z = 0; z < m_size[2]; z++){
+    for(int t = 0; t < m_size[3]; t++){
+        for(int mu = 0; mu < 4; mu++){
+            omega = (*m_lat)(x,y,z,t)[mu]*m_act->computeConstant(x, y, z, t, mu);
+            double tr = (omega-~omega).imagTrace()/6.0;
+            omega = (omega-~omega) * 0.5;
+            for(int i = 1; i < 18; i+=2)
+                omega.mat[i] -= tr;
+            for(int i = 0; i < 18; i+=2){
+                double temp = omega.mat[i];
+                omega.mat[i] = -omega.mat[i+1] * 0.5;
+                omega.mat[i+1] = temp * 0.5;
+            }
+            (*m_Z2)(x,y,z,t)[mu] = omega;
+        }
+    }}}}
+
+    // compute V_t+eps
+    for(int x = 0; x < m_size[0]; x++){
+    for(int y = 0; y < m_size[1]; y++){
+    for(int z = 0; z < m_size[2]; z++){
+    for(int t = 0; t < m_size[3]; t++){
+        for(int mu = 0; mu < 4; mu++){
+            (*m_lat)(x,y,z,t)[mu] *= exp(((*m_Z2)(x,y,z,t)[mu]*(3.0/4.0)
+                                         -(*m_Z1)(x,y,z,t)[mu]*(8.0/9.0)
+                                         +(*m_Z0)(x,y,z,t)[mu]*(17.0/36.0))*epsilon);
         }
     }}}}
 }
@@ -99,6 +184,8 @@ void WilsonFlow::computeObservables(){
         MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, m_parallel->getComm());
     }
     m_obsValues[0] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
+                      m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
+    m_obsValues[1] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
                       m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
 }
 

@@ -14,12 +14,13 @@ class Lattice{
         std::vector<int> getSize() { return m_size; }
         void setToRandom();
         void setToUnity();
-        class SU3 shift(int x, int y, int z, int t, int mu,
+        class SU3& shift(int x, int y, int z, int t, int mu,
                         int shiftDir, int shiftSign);
-        class SU3 shift2(int x, int y, int z, int t, int mu,
+        class SU3& shift2(int x, int y, int z, int t, int mu,
                          int shiftDir, int shiftSign, int shiftDir2, int shiftSign2);
 
 private:
         std::vector<int> m_size;
         class Parallel* m_parallel = nullptr;
+        SU3 msg;
 };

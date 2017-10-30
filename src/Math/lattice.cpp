@@ -70,7 +70,7 @@ void Lattice::setToUnity(){
     }}}}
 }
 
-SU3 Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign){
+SU3& Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign){
     std::vector<int> idx = {x,y,z,t};
     int mpiShifts = 0, mpiShiftDir = -1, mpiShiftSign;
 
@@ -107,15 +107,14 @@ SU3 Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftSi
                 sendIdx[i] = idx[i];
 
         }
-        SU3 msg;
         MPI_Sendrecv(m_lattice[sendIdx[0]][sendIdx[1]][sendIdx[2]][sendIdx[3]][mu].mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, mpiShiftSign), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, abs(mpiShiftSign-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return std::move(msg);
+        return msg;
     }
 }
 
-SU3 Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign, int shiftDir2, int shiftSign2){
+SU3& Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign, int shiftDir2, int shiftSign2){
     std::vector<int> idx = {x,y,z,t};
     int mpiShifts = 0, mpiShiftDir = -1, mpiShiftDir2, mpiShiftSign, mpiShiftSign2;
 
@@ -155,15 +154,13 @@ SU3 Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftS
                 sendIdx[i] = idx[i];
 
         }
-        SU3 msg;
         MPI_Sendrecv(m_lattice[sendIdx[0]][sendIdx[1]][sendIdx[2]][sendIdx[3]][mu].mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, mpiShiftSign), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, m_parallel->getNeighbor(mpiShiftDir, abs(mpiShiftSign-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return std::move(msg);
+        return msg;
     }
 
     if(mpiShifts == 2){
-        SU3 msg;
 
         // first shift
         std::vector<int> sendIdx = {x,y,z,t};
@@ -191,6 +188,6 @@ SU3 Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftS
                      m_parallel->getSecondNeighbor(mpiShiftDir, mpiShiftSign, mpiShiftDir2, mpiShiftSign2), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, m_parallel->getSecondNeighbor(mpiShiftDir, abs(mpiShiftSign-1), mpiShiftDir2, abs(mpiShiftSign2-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return std::move(msg);
+        return msg;
     }
 }

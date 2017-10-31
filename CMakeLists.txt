@@ -40,6 +40,7 @@ set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldfactory.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldreader.cpp
                ${PROJECT_SOURCE_DIR}/Apps/wilsonflow.cpp
+               ${PROJECT_SOURCE_DIR}/Utils/latticeunits.cpp
 )
 
 add_library( sharedResources ${SHARED_SRC} )

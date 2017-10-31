@@ -8,3 +8,4 @@
 #include "Observables/observable.h"
 #include "Observables/observablelist.h"
 #include "ParallelTools/parallel.h"
+#include "Utils/latticeunits.h"

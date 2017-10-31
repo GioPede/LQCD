@@ -37,7 +37,7 @@ int main(int argn, char* argv[]) {
     WilsonFlow flow(input, parallelGeom);
 
     // Start Generating Gauges
-    flow.flowConfigurations();
+    //flow.flowConfigurations();
 
     // Finalize MPI and delete objects
     parallelGeom->finalize();

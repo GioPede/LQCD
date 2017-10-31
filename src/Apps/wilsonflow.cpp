@@ -15,11 +15,7 @@
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
 WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
-    addObservable(new Plaquette());
-    addObservable(new EnergyDensity());
-    addObservable(new TopologicalCharge());
     m_size = input->subLatticeSize;
-
     m_outDir = input->outDir;
     m_inputConfList = input->inputConfList;
 
@@ -33,6 +29,9 @@ WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
     m_Z1 = new Lattice(m_size, m_parallel);
     m_Z2 = new Lattice(m_size, m_parallel);
 
+    addObservable(new Plaquette());
+    addObservable(new EnergyDensity());
+    addObservable(new TopologicalCharge());
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->initObservable(m_lat);
     }
@@ -40,6 +39,8 @@ WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
     // initialize action
     if(std::string(input->actionTag) == "puregauge")
         m_act = new PureGauge(m_lat, input->beta);
+
+    LatticeUnits::initialize(m_parallel, input->beta);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'

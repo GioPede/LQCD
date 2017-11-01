@@ -2,13 +2,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <array>
 #include <string>
 
 class InputParser{
     public:
         InputParser(int argn, char* argv[]);
-        std::vector<int> latticeSize = std::vector<int> (4);
-        std::vector<int> subLatticeSize = std::vector<int> (4);
+        std::array<int, 4> latticeSize;
+        std::array<int, 4> subLatticeSize;
         std::vector<std::string> inputConfList;
 
         int MCSteps, thermSteps, nConf;

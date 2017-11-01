@@ -14,20 +14,18 @@
 
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
-GaugeFieldReader::GaugeFieldReader(InputParser* input, Parallel* parallel){
-    setSize(input->subLatticeSize);
+GaugeFieldReader::GaugeFieldReader(InputParser* input){
+    m_size = input->subLatticeSize;
     addObservable(new Plaquette());
     m_outDir = input->outDir;
     m_inputConfList = input->inputConfList;
-
-    m_parallel = parallel;
     m_inputConf = new InputConf(this);
 }
 
 
 // CREATE THE LATTICE AND INITIALIZE OBJECTS
 void GaugeFieldReader::initGFR(){
-    m_lat = new Lattice(m_size, m_parallel);
+    m_lat = new Lattice(m_size);
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->initObservable(m_lat);
     }
@@ -37,20 +35,20 @@ void GaugeFieldReader::initGFR(){
 // ALGORITHM AND SAVES THEM FOR FUTURE ANALISYS.
 void GaugeFieldReader::sampleConfigurations(){
     // check that current processor should be active
-    if(m_parallel->isActive){
+    if(Parallel::isActive()){
         for(int conf = 0; conf < m_inputConfList.size(); conf++){
             m_inputConf->readConfiguration(m_inputConfList[conf].c_str());
             for(int i = 0; i < m_obs.size(); i++)
                 m_obs[i]->compute();
-            if(m_parallel->getRank() == 0) {
+            if(Parallel::rank() == 0) {
                 for(int i = 0; i < m_obs.size(); i++){
                     double temp, value = 0.0;
-                    for(int rank = 1; rank <  m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] * m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3] ; rank++){
+                    for(int rank = 1; rank < Parallel::activeProcs() ; rank++){
                         MPI_Recv(&temp, 1, MPI_DOUBLE, rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                         value += temp;
                     }
                     value += m_obs[i]-> value();
-                    printf("Conf %i\t Plaq = %f \n", conf, value / m_parallel->getSubBlocks()[0] / m_parallel->getSubBlocks()[1] / m_parallel->getSubBlocks()[2] / m_parallel->getSubBlocks()[3] );
+                    printf("Conf %i\t Plaq = %f \n", conf, value / Parallel::activeProcs());
                 }
             }
 
@@ -70,9 +68,6 @@ Point& GaugeFieldReader::getLatticeSite(int x, int y, int z, int t){
     return (*m_lat)(x,y,z,t);
 }
 
-void GaugeFieldReader::setSize(std::vector<int> size){
-    m_size = size;
-}
 void GaugeFieldReader::addObservable(Observable *observable){
     m_obs.push_back(observable);
     m_obsValues.push_back(0.0);

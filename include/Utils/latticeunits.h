@@ -4,7 +4,7 @@
 
 struct LatticeUnits{
 
-    static void initialize(class Parallel *parallel, double beta);
+    static void initialize(double beta);
 
     static double beta;
     static double latticeVolume;

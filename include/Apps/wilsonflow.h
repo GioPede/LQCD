@@ -1,25 +1,24 @@
 #pragma once
 #include <vector>
 #include <random>
+#include <array>
 #include "Apps/app.h"
 
 
 class WilsonFlow : public App {
     public:
-        WilsonFlow(class InputParser* input, class Parallel* parallel);
+        WilsonFlow(class InputParser* input);
 
         // main functions
         void flowConfigurations();
 
         // setters-getters
-        void setSize(std::vector<int> size);
         void setAction(class Action* action);
         void addObservable(class Observable* observable);
         const char* getOutDir() { return m_outDir; }
         char getStartType() { return m_startType; }
         class Point& getLatticeSite(int x, int y, int z, int t);
-        class Parallel* getParallel() { return m_parallel; }
-        std::vector<int>& getSize() { return m_size; }
+        std::array<int, 4>& getSize() { return m_size; }
         std::vector<double>& getObsValues() { return m_obsValues; }
         std::vector<class Observable*>& getObs() { return m_obs; }
 
@@ -32,7 +31,6 @@ class WilsonFlow : public App {
         class Lattice* m_Z1 = nullptr;
         class Lattice* m_Z2 = nullptr;
         class Action* m_act = nullptr;
-        class Parallel* m_parallel = nullptr;
         class OutputConf* m_outputConf = nullptr;
         class OutputTerm* m_outputTerm = nullptr;
         class OutputObs* m_outputObs = nullptr;
@@ -40,7 +38,7 @@ class WilsonFlow : public App {
         std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;
         std::vector<std::string> m_inputConfList;
-        std::vector<int> m_size;
+        std::array<int, 4> m_size;
 
         struct SU3 omega;
         // member variables

@@ -5,7 +5,7 @@
 
 class GaugeFieldFactory : public App {
     public:
-        GaugeFieldFactory(class InputParser* input, class Parallel* parallel);
+        GaugeFieldFactory(class InputParser* input);
 
         // main functions
         void generateConfigurations();
@@ -15,8 +15,7 @@ class GaugeFieldFactory : public App {
         const char* getOutDir() { return m_outDir; }
         char getStartType() { return m_startType; }
         class Point& getLatticeSite(int x, int y, int z, int t);
-        class Parallel* getParallel() { return m_parallel; }
-        std::vector<int>& getSize() { return m_size; }
+        std::array<int, 4>& getSize() { return m_size; }
         std::vector<double>& getObsValues() { return m_obsValues; }
         std::vector<class Observable*>& getObs() { return m_obs; }
 
@@ -24,7 +23,6 @@ private:
         // member classes
         class Lattice* m_lat = nullptr;
         class Action* m_act = nullptr;
-        class Parallel* m_parallel = nullptr;
         class OutputConf* m_outputConf = nullptr;
         class OutputTerm* m_outputTerm = nullptr;
         class OutputObs* m_outputObs = nullptr;
@@ -34,7 +32,7 @@ private:
         std::mt19937* m_random = nullptr;
 
         // member variables
-        std::vector<int> m_size;
+        std::array<int, 4> m_size;
         int m_MCSteps;
         int m_correlationSteps;
         int m_thermSteps;

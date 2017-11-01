@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cmath>
 #include <string>
+#include <iostream>
 
 // CONSTRUCTOR
 Plaquette::Plaquette() : Observable(){

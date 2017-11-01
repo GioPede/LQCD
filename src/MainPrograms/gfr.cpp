@@ -23,18 +23,15 @@ int main(int argn, char* argv[]) {
     // Start timer
     auto start = std::chrono::system_clock::now();
 
-    // Start MPI
-    Parallel* parallelGeom = new Parallel(argn, argv);
-
     // Check argument count, read and parse the input file
     InputParser* input;
     input = new InputParser(argn, argv);
 
     // Initialize MPI and organize sublattices
-    parallelGeom->createNeighborLists(input->latticeSize, input->subLatticeSize);
+    Parallel::initialize(input->latticeSize, input->subLatticeSize);
 
     // Send Parameters to the Reader and init the system
-    GaugeFieldReader GFR(input, parallelGeom);
+    GaugeFieldReader GFR(input);
 
     //Init the System
     GFR.initGFR();
@@ -43,17 +40,16 @@ int main(int argn, char* argv[]) {
     GFR.sampleConfigurations();
 
     // Finalize MPI and delete objects
-    parallelGeom->finalize();
+    Parallel::finalize();
 
     // Stop timer and output
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsedTime = end-start;
-    if(parallelGeom->getRank() == 0)
+    if(Parallel::rank() == 0)
         printf("Total time taken: %.2fs\n", elapsedTime.count());
 
     // End
     delete input;
-    delete parallelGeom;
     return 0;
 }
 

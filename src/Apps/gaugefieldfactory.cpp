@@ -8,7 +8,7 @@
 std::uniform_real_distribution<double> randomUniform(0.0, 1.0);
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
-GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
+GaugeFieldFactory::GaugeFieldFactory(InputParser* input){
 
     // set parameters from input
     m_size = input->subLatticeSize;
@@ -21,7 +21,6 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
     m_startType = input->startType;
 
     // assign or create sublbclasses
-    m_parallel = parallel;
     m_outputObs  = new OutputObs(this);
     m_outputTerm = new OutputTerm(this);
     m_outputConf = new OutputConf(this);
@@ -29,7 +28,7 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
 
     // PRNG initialization
     std::random_device rd;
-    m_random = new std::mt19937(m_parallel->getRank()+rd());
+    m_random = new std::mt19937(Parallel::rank()+rd());
 
 
     // initialize observables list
@@ -37,7 +36,7 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
     addObservable(new TopologicalCharge());
 
     // CREATE THE LATTICE AND INITIALIZE OBJECTS
-    m_lat = new Lattice(m_size, m_parallel);
+    m_lat = new Lattice(m_size);
     if(m_startType == 'H' || m_startType == 'h')
         m_lat->setToRandom();
     else if(m_startType == 'C' || m_startType == 'c')
@@ -49,13 +48,15 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input, Parallel* parallel){
     // initialize action
     if(std::string(input->actionTag) == "puregauge")
         m_act = new PureGauge(m_lat, input->beta);
+
+    LatticeUnits::initialize(input->beta);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'
 // ALGORITHM AND SAVES THEM FOR FUTURE ANALISYS.
 void GaugeFieldFactory::generateConfigurations(){
     // check that current processor should be active
-    if(m_parallel->isActive){
+    if(Parallel::isActive()){
 
         // initial state
         computeObservables();
@@ -113,13 +114,13 @@ void GaugeFieldFactory::thermalizeTime(){
             computeObservables();
             m_outputTerm->printThermSteps(step, double(m_accepted)/double(m_updates));
             std::chrono::duration<double> thermStepTime = std::chrono::system_clock::now()-thermStepStart;
-            if(m_parallel->getRank() == 0)
+            if(Parallel::rank() == 0)
                 printf("\tThermalization Step Time:  %lf s\n\n", thermStepTime.count());
             thermStepStart = std::chrono::system_clock::now();
         }
     }
     std::chrono::duration<double> thermTime = std::chrono::system_clock::now()-thermStart;
-    if(m_parallel->getRank() == 0){
+    if(Parallel::rank() == 0){
         printf("Total Thermalization Steps: %i\n", m_thermSteps);
         printf("Total Thermalization Time:  %lf s\n\n", thermTime.count());
     }
@@ -138,13 +139,13 @@ void GaugeFieldFactory::sampleConfTime(){
             computeObservables();
             m_outputTerm->printGenerationStep(confNum, double(m_accepted)/double(m_updates));
             std::chrono::duration<double> confUpdateTime = std::chrono::system_clock::now()-confUpdateStart;
-            if(m_parallel->getRank() == 0)
+            if(Parallel::rank() == 0)
                 printf("\tConfiguration Update:  %lf s\n", confUpdateTime.count());
             writeStart = std::chrono::system_clock::now();
             m_outputConf->writeConfiguration(confNum);
             m_outputObs->writeObservables(step);
             std::chrono::duration<double> writeTime = std::chrono::system_clock::now()-writeStart;
-            if(m_parallel->getRank() == 0)
+            if(Parallel::rank() == 0)
                 printf("\tWrite Time:            %lf s\n\n", writeTime.count());
             confUpdateStart = std::chrono::system_clock::now();
             confNum++;
@@ -188,12 +189,10 @@ void GaugeFieldFactory::computeObservables(){
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->compute();
         double value = m_obs[i]->value();
-        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, m_parallel->getComm());
+        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, Parallel::cartCoordComm());
     }
-    m_obsValues[0] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
-                      m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
+    m_obsValues[0] /= Parallel::activeProcs();
 }
-
 
 // GETTERS AND SETTERS
 Point& GaugeFieldFactory::getLatticeSite(int x, int y, int z, int t){

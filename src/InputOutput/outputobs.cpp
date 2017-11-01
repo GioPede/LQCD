@@ -9,7 +9,7 @@
 
 OutputObs::OutputObs(App *app){
     m_app = app;
-    m_write = m_app->getParallel()->getRank() == 0 ? 1 : 0;
+    m_write = Parallel::rank() == 0 ? 1 : 0;
     if(m_write){
         char fileName [128];
         sprintf(fileName, "%s/%s/observables.dat", OUT_PREFIX, m_app->getOutDir());

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <array>
 
 class InputConf{
     public:
@@ -10,8 +10,8 @@ class InputConf{
         void readConfiguration(const char *inputFile);
 private:
         class App* m_app = nullptr;
-        std::vector<int> m_subSize;
-        std::vector<int> m_fullSize;
-        std::vector<int> m_subBlock;
+        std::array<int, 4> m_subSize;
+        std::array<int, 4> m_fullSize;
+        std::array<int, 4> m_subBlock;
         int m_linkSize;
 };

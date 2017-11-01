@@ -10,13 +10,13 @@
 // CONSTRUCTOR
 OutputTerm::OutputTerm(App *app){
     m_app = app;
-    m_write = m_app->getParallel()->getRank() == 0 ? 1 : 0;
+    m_write = Parallel::rank() == 0 ? 1 : 0;
 }
 
 void OutputTerm::printInitialConditions(){
     if(m_write){
-        printf("Total Lattice Size: %2i %2i %2i %2i\n", m_app->getParallel()->getFullSize()[0],m_app->getParallel()->getFullSize()[1],
-                m_app->getParallel()->getFullSize()[2],m_app->getParallel()->getFullSize()[3]);
+        printf("Total Lattice Size: %2i %2i %2i %2i\n", Parallel::latticeFullSize()[0],Parallel::latticeFullSize()[1],
+               Parallel::latticeFullSize()[2], Parallel::latticeFullSize()[3]);
         printf("Sublattice Size:    %2i %2i %2i %2i\n\n", m_app->getSize()[0],m_app->getSize()[1],
                 m_app->getSize()[2],m_app->getSize()[3]);
     }

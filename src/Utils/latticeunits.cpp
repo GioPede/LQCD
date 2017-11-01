@@ -12,13 +12,12 @@ double LatticeUnits::latticeVolume = 0;
 double LatticeUnits::latticeSpacing = 0;
 std::array<int,4> LatticeUnits::size;
 
-void LatticeUnits::initialize(Parallel* parallel, double beta){
+void LatticeUnits::initialize(double beta){
     LatticeUnits::Nc = 3;
     LatticeUnits::beta = beta;
     LatticeUnits::latticeSpacing = calculateLatticeSpacing(beta);
 
-    for(int i = 0; i < 4; i++)
-        LatticeUnits::size[i] = parallel->getFullSize()[i];
+    LatticeUnits::size = Parallel::latticeFullSize();
     LatticeUnits::latticeSites = std::accumulate(LatticeUnits::size.begin(),
                                                  LatticeUnits::size.end(), 1,
                                                  std::multiplies<int>());

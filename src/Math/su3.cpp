@@ -499,9 +499,9 @@ SU3 exp(const SU3& Q){
     h2.imag = s2u - cw*smu - 3*u*xi*cmu;
 
     if (c0negative){
-        h0.real = -h0.real;
-        h1.imag = -h1.imag;
-        h2.real = -h2.real;
+        h0.imag = -h0.imag;
+        h1.real = -h1.real;
+        h2.imag = -h2.imag;
     }
     double norm = 1.0/(9.0*u2-w2);
 

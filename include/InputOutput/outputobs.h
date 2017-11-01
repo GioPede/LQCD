@@ -9,8 +9,8 @@ class OutputObs{
     void closeFile();
     void writeFlowObservables(int confNum, std::vector<std::vector<double> > obsMatrix);
 private:
-        class App* m_app = nullptr;
-        bool m_write;
-        FILE* m_file;
+    class App* m_app = nullptr;
+    bool m_write;
+    FILE* m_file;
 };
 

@@ -2,7 +2,7 @@
 #ifndef LACONIA
 #include <mpi/mpi.h>
 #else
-//#include <mpi.h>
+#include <mpi.h>
 #endif
 #include <vector>
 #include <cstdio>
@@ -14,20 +14,19 @@
 
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
-WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
+WilsonFlow::WilsonFlow(InputParser* input){
     m_size = input->subLatticeSize;
     m_outDir = input->outDir;
     m_inputConfList = input->inputConfList;
 
-    m_parallel = parallel;
     m_outputObs  = new OutputObs(this);
     m_outputTerm = new OutputTerm(this);
     m_inputConf  = new InputConf(this);
 
-    m_lat = new Lattice(m_size, m_parallel);
-    m_Z0 = new Lattice(m_size, m_parallel);
-    m_Z1 = new Lattice(m_size, m_parallel);
-    m_Z2 = new Lattice(m_size, m_parallel);
+    m_lat = new Lattice(m_size);
+    m_Z0 = new Lattice(m_size);
+    m_Z1 = new Lattice(m_size);
+    m_Z2 = new Lattice(m_size);
 
     addObservable(new Plaquette());
     addObservable(new EnergyDensity());
@@ -40,7 +39,7 @@ WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
     if(std::string(input->actionTag) == "puregauge")
         m_act = new PureGauge(m_lat, input->beta);
 
-    LatticeUnits::initialize(m_parallel, input->beta);
+    LatticeUnits::initialize(input->beta);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'
@@ -48,8 +47,8 @@ WilsonFlow::WilsonFlow(InputParser* input, Parallel* parallel){
 void WilsonFlow::flowConfigurations(){
     // check that current processor should be active
     int confNum = 0;
-    double epsilon = 0.005;
-    if(m_parallel->isActive){
+    double epsilon = 0.02;
+    if(Parallel::isActive()){
         for(auto& conf : m_inputConfList){
             m_inputConf->readConfiguration(conf.c_str());
             computeObservables();
@@ -63,7 +62,7 @@ void WilsonFlow::flowConfigurations(){
 
 void WilsonFlow::applyWilsonFlow(int confNum, double epsilon){
     std::vector<std::vector<double>> flowObsMatrix;
-    flowObsMatrix.resize(int(0.1/epsilon));
+    flowObsMatrix.resize(int(1.0/epsilon));
     for(auto& slice : flowObsMatrix)
         slice.resize(m_obs.size()+1);
     flowObsMatrix[0][0] = 0.0;
@@ -88,7 +87,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            omega = (*m_lat)(x,y,z,t)[mu]*m_act->computeConstant(x, y, z, t, mu);
+            omega = m_act->computeConstant(x, y, z, t, mu)*(*m_lat)(x,y,z,t)[mu];
             double tr = (omega-~omega).imagTrace()/6.0;
             omega = (omega-~omega) * 0.5;
             for(int i = 1; i < 18; i+=2)
@@ -118,7 +117,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            omega = (*m_lat)(x,y,z,t)[mu]*m_act->computeConstant(x, y, z, t, mu);
+            omega = m_act->computeConstant(x, y, z, t, mu)*(*m_lat)(x,y,z,t)[mu];
             double tr = (omega-~omega).imagTrace()/6.0;
             omega = (omega-~omega) * 0.5;
             for(int i = 1; i < 18; i+=2)
@@ -149,7 +148,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            omega = (*m_lat)(x,y,z,t)[mu]*m_act->computeConstant(x, y, z, t, mu);
+            omega = m_act->computeConstant(x, y, z, t, mu)*(*m_lat)(x,y,z,t)[mu];
             double tr = (omega-~omega).imagTrace()/6.0;
             omega = (omega-~omega) * 0.5;
             for(int i = 1; i < 18; i+=2)
@@ -182,21 +181,15 @@ void WilsonFlow::computeObservables(){
     for(int i = 0; i < m_obs.size(); i++){
         m_obs[i]->compute();
         double value = m_obs[i]->value();
-        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, m_parallel->getComm());
+        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, Parallel::cartCoordComm());
     }
-    m_obsValues[0] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
-                      m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
-    m_obsValues[1] /= m_parallel->getSubBlocks()[0] * m_parallel->getSubBlocks()[1] *
-                      m_parallel->getSubBlocks()[2] * m_parallel->getSubBlocks()[3];
+    m_obsValues[0] /= Parallel::activeProcs();
+    m_obsValues[1] /= LatticeUnits::latticeSites;
 }
 
 // GETTERS AND SETTERS
 Point& WilsonFlow::getLatticeSite(int x, int y, int z, int t){
     return (*m_lat)(x,y,z,t);
-}
-
-void WilsonFlow::setSize(std::vector<int> size){
-    m_size = size;
 }
 
 void WilsonFlow::setAction(Action* action){

@@ -19,10 +19,6 @@ WilsonFlow::WilsonFlow(InputParser* input){
     m_outDir = input->outDir;
     m_inputConfList = input->inputConfList;
 
-    m_outputObs  = new OutputObs(this);
-    m_outputTerm = new OutputTerm(this);
-    m_inputConf  = new InputConf(this);
-
     m_lat = new Lattice(m_size);
     m_Z0 = new Lattice(m_size);
     m_Z1 = new Lattice(m_size);
@@ -50,10 +46,9 @@ void WilsonFlow::flowConfigurations(){
     double epsilon = 0.02;
     if(Parallel::isActive()){
         for(auto& conf : m_inputConfList){
-            m_inputConf->readConfiguration(conf.c_str());
+            LatticeIO::InputConf::readConf(*m_lat, conf.c_str());
             computeObservables();
-            m_outputTerm->writeObservables(confNum);
-            m_outputObs->writeObservables(confNum);
+            LatticeIO::OutputTerm::writeObs(confNum, m_obs);
             applyWilsonFlow(confNum, epsilon);
             confNum++;
         }
@@ -62,7 +57,7 @@ void WilsonFlow::flowConfigurations(){
 
 void WilsonFlow::applyWilsonFlow(int confNum, double epsilon){
     std::vector<std::vector<double>> flowObsMatrix;
-    flowObsMatrix.resize(int(1.0/epsilon));
+    flowObsMatrix.resize(int(0.2/epsilon));
     for(auto& slice : flowObsMatrix)
         slice.resize(m_obs.size()+1);
     flowObsMatrix[0][0] = 0.0;
@@ -75,9 +70,9 @@ void WilsonFlow::applyWilsonFlow(int confNum, double epsilon){
         computeObservables();
         for(int i = 0; i < m_obs.size(); i++)
             flowObsMatrix[t][i+1] = m_obsValues[i];
-        m_outputTerm->writeFlowObservables(flowObsMatrix[t]);
+        LatticeIO::OutputTerm::writeFlowObs(flowObsMatrix[t][0], m_obs);
     }
-    m_outputObs->writeFlowObservables(confNum, flowObsMatrix);
+    LatticeIO::OutputObs::writeFlowObs(confNum, m_obs, flowObsMatrix);
 }
 
 void WilsonFlow::flowStep(double epsilon){

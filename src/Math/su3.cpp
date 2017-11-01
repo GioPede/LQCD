@@ -31,13 +31,12 @@ SU3::SU3(double value) noexcept{
 SU3::SU3(SU3 const & source) noexcept : mat(source.mat){
 }
 
-SU3::SU3(SU3&& source) noexcept{
-    *this = std::move(source);
+SU3::SU3(SU3&& source) noexcept: mat(std::move(source.mat)){
 }
 
 // assignment
 SU3& SU3::operator=(SU3&& other) noexcept{
-    std::swap(mat, other.mat);
+    mat = other.mat;
     return *this;
 }
 
@@ -112,7 +111,8 @@ SU3& SU3::operator*=(const SU3& other) noexcept{
             }
         }
     }
-    return *this = result;
+    *this = result;
+    return *this;
 }
 
 // multiplication
@@ -156,7 +156,8 @@ SU3& SU3::operator*=(SU3&& other) noexcept{
             }
         }
     }
-    return *this = result;
+    *this = result;
+    return *this;
 }
 
 

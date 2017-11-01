@@ -1,16 +1,17 @@
 #pragma once
-#include <cstdio>
 #include <vector>
+#include "Observables/observable.h"
 
-class OutputObs{
+namespace LatticeIO {
+
+    class OutputObs{
     public:
-    OutputObs(class App* app);
-    void writeObservables(int MCSteps);
-    void closeFile();
-    void writeFlowObservables(int confNum, std::vector<std::vector<double> > obsMatrix);
-private:
-    class App* m_app = nullptr;
-    bool m_write;
-    FILE* m_file;
-};
+        static void initialize(std::vector<Observable*>& obsList);
+        static void writeObs(std::vector<Observable*>& obsList, int MCSteps);
+        static void writeFlowObs(int confNum, std::vector<Observable*>& obsList, std::vector<std::vector<double>>& obsMatrix);
+    private:
+        static FILE* m_file;
+        static char fileName[1024];
+    };
 
+} // end LatticeIO

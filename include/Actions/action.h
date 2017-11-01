@@ -1,6 +1,5 @@
 #pragma once
 struct SU3;
-class Lattice;
 
 // Prototype for class Action. Every implementation of a physical action should
 // inherit from this class.

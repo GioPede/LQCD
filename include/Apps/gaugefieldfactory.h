@@ -23,10 +23,6 @@ private:
         // member classes
         class Lattice* m_lat = nullptr;
         class Action* m_act = nullptr;
-        class OutputConf* m_outputConf = nullptr;
-        class OutputTerm* m_outputTerm = nullptr;
-        class OutputObs* m_outputObs = nullptr;
-        class InputConf* m_inputConf = nullptr;
         std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;
         std::mt19937* m_random = nullptr;

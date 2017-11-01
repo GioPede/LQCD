@@ -24,7 +24,6 @@ class GaugeFieldReader : public App {
 private:
         // member classes
         class Lattice* m_lat = nullptr;
-        class InputConf* m_inputConf = nullptr;
         std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;
         std::vector<std::string> m_inputConfList;

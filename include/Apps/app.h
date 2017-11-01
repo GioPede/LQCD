@@ -19,8 +19,6 @@ class App{
     private:
 		// member classes
         class Lattice* m_lat = nullptr;
-		class OutputConf* m_outputConf = nullptr;
-		class InputConf* m_inputConf = nullptr;
 		std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;
 		std::mt19937* m_random = nullptr;

@@ -19,7 +19,6 @@ GaugeFieldReader::GaugeFieldReader(InputParser* input){
     addObservable(new Plaquette());
     m_outDir = input->outDir;
     m_inputConfList = input->inputConfList;
-    m_inputConf = new InputConf(this);
 }
 
 
@@ -37,7 +36,7 @@ void GaugeFieldReader::sampleConfigurations(){
     // check that current processor should be active
     if(Parallel::isActive()){
         for(int conf = 0; conf < m_inputConfList.size(); conf++){
-            m_inputConf->readConfiguration(m_inputConfList[conf].c_str());
+            LatticeIO::InputConf::readConf(*m_lat, m_inputConfList[conf].c_str());
             for(int i = 0; i < m_obs.size(); i++)
                 m_obs[i]->compute();
             if(Parallel::rank() == 0) {

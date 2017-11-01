@@ -31,10 +31,6 @@ class WilsonFlow : public App {
         class Lattice* m_Z1 = nullptr;
         class Lattice* m_Z2 = nullptr;
         class Action* m_act = nullptr;
-        class OutputConf* m_outputConf = nullptr;
-        class OutputTerm* m_outputTerm = nullptr;
-        class OutputObs* m_outputObs = nullptr;
-        class InputConf* m_inputConf = nullptr;
         std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;
         std::vector<std::string> m_inputConfList;

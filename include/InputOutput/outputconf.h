@@ -1,15 +1,14 @@
 #pragma once
-#include <array>
+#include "Math/lattice.h"
 
-class OutputConf{
-public:
-    OutputConf(class App* app);
-    void writeSubLattice(int update);
-    void writeConfiguration(int confNum);
-private:
-    class App* m_app = nullptr;
-    std::array<int, 4> m_subSize;
-    std::array<int, 4> m_fullSize;
-    std::array<int, 4> m_subBlock;
-    int m_linkSize;
-};
+namespace LatticeIO {
+
+    class OutputConf{
+    public:
+        static void writeConf(Lattice& lattice, int confNum);
+        static void writeSubLattice(Lattice& lattice, int confNum);
+    private:
+        static int m_linkSize;
+    };
+
+} // end LatticeIO

@@ -20,12 +20,6 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input){
     m_outDir = input->outDir;
     m_startType = input->startType;
 
-    // assign or create sublbclasses
-    m_outputObs  = new OutputObs(this);
-    m_outputTerm = new OutputTerm(this);
-    m_outputConf = new OutputConf(this);
-    m_inputConf  = new InputConf(this);
-
     // PRNG initialization
     std::random_device rd;
     m_random = new std::mt19937(Parallel::rank()+rd());
@@ -50,6 +44,8 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input){
         m_act = new PureGauge(m_lat, input->beta);
 
     LatticeUnits::initialize(input->beta);
+    LatticeIO::OutputTerm::printInitialConditions();
+    LatticeIO::OutputObs::initialize(m_obs);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'
@@ -58,17 +54,11 @@ void GaugeFieldFactory::generateConfigurations(){
     // check that current processor should be active
     if(Parallel::isActive()){
 
-        // initial state
-        computeObservables();
-        m_outputTerm->printInitialConditions();
-
         // thermalization
         thermalize();
 
         // generate and save configurations
         sampleConf();
-
-        m_outputObs->closeFile();
     }
 }
 
@@ -80,7 +70,7 @@ void GaugeFieldFactory::thermalize(){
         // compute and print information on current state
         if(step % m_correlationSteps == 0){
             computeObservables();
-            m_outputTerm->printThermSteps(step, double(m_accepted)/double(m_updates));
+            LatticeIO::OutputTerm::printThermStep(step, m_obs, double(m_accepted)/double(m_updates));
         }
     }
 }
@@ -94,9 +84,9 @@ void GaugeFieldFactory::sampleConf(){
         // compute and print information on current state
         if(step % m_correlationSteps == 0){
             computeObservables();
-            m_outputTerm->printGenerationStep(confNum, double(m_accepted)/double(m_updates));
-            m_outputConf->writeConfiguration(confNum);
-            m_outputObs->writeObservables(step);
+            LatticeIO::OutputObs::writeObs(m_obs, step);
+            LatticeIO::OutputTerm::printGenStep(confNum, m_obs, double(m_accepted)/double(m_updates));
+            LatticeIO::OutputConf::writeConf(*m_lat, confNum);
             confNum++;
         }
     }
@@ -112,7 +102,7 @@ void GaugeFieldFactory::thermalizeTime(){
         // compute and print information on current state
         if(step % m_correlationSteps == 0){
             computeObservables();
-            m_outputTerm->printThermSteps(step, double(m_accepted)/double(m_updates));
+            LatticeIO::OutputTerm::printThermStep(step, m_obs, double(m_accepted)/double(m_updates));
             std::chrono::duration<double> thermStepTime = std::chrono::system_clock::now()-thermStepStart;
             if(Parallel::rank() == 0)
                 printf("\tThermalization Step Time:  %lf s\n\n", thermStepTime.count());
@@ -137,13 +127,13 @@ void GaugeFieldFactory::sampleConfTime(){
         // compute and print information on current state
         if(step % m_correlationSteps == 0){
             computeObservables();
-            m_outputTerm->printGenerationStep(confNum, double(m_accepted)/double(m_updates));
+            LatticeIO::OutputTerm::printThermStep(confNum, m_obs, double(m_accepted)/double(m_updates));
             std::chrono::duration<double> confUpdateTime = std::chrono::system_clock::now()-confUpdateStart;
             if(Parallel::rank() == 0)
                 printf("\tConfiguration Update:  %lf s\n", confUpdateTime.count());
             writeStart = std::chrono::system_clock::now();
-            m_outputConf->writeConfiguration(confNum);
-            m_outputObs->writeObservables(step);
+            LatticeIO::OutputConf::writeConf(*m_lat, confNum);
+            LatticeIO::OutputObs::writeObs(m_obs, step);
             std::chrono::duration<double> writeTime = std::chrono::system_clock::now()-writeStart;
             if(Parallel::rank() == 0)
                 printf("\tWrite Time:            %lf s\n\n", writeTime.count());

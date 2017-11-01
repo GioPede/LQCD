@@ -1,17 +1,15 @@
 #pragma once
-#include <string>
-#include <array>
+#include "Math/lattice.h"
 
-class InputConf{
+namespace LatticeIO {
+
+    class InputConf{
     public:
-        InputConf(class App* app);
-        void readSubLattice(int update);
-        void readConfiguration(int confNum);
-        void readConfiguration(const char *inputFile);
-private:
-        class App* m_app = nullptr;
-        std::array<int, 4> m_subSize;
-        std::array<int, 4> m_fullSize;
-        std::array<int, 4> m_subBlock;
-        int m_linkSize;
-};
+        static void readConf(Lattice& lattice, int confNum);
+        static void readConf(Lattice& lattice, const char *inputFile);
+        static void readSubLattice(Lattice& lattice, int confNum);
+    private:
+        static int m_linkSize;
+    };
+
+} // end LatticeIO

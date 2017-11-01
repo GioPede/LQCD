@@ -19,12 +19,12 @@ SU3& PureGauge::computeConstant(int x, int y, int z, int t, int mu){
     constPart.setSU3Zero();
     for(int nu = 0; nu < 4; nu++){
         if(nu != mu){
-            staple =  (   m_lat->shift(x,y,z,t,nu,mu,1) );
+            staple  =  (   m_lat->shift(x,y,z,t,nu,mu,1) );
             staple *= ~(   m_lat->shift(x,y,z,t,mu,nu,1)) ;
             staple *= ~( (*m_lat)(x,y,z,t)[nu]);
             constPart += staple;
 
-            staple = ~( m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1) );
+            staple  = ~( m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1) );
             staple *= ~( m_lat->shift  (x,y,z,t,mu,nu,-1));
             staple *=  ( m_lat->shift  (x,y,z,t,nu,nu,-1));
             constPart += staple;

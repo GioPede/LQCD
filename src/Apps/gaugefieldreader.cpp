@@ -2,7 +2,7 @@
 #ifndef LACONIA
 #include <mpi/mpi.h>
 #else
-//#include <mpi.h>
+#include <mpi.h>
 #endif
 #include <vector>
 #include <cstdio>

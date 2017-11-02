@@ -1,9 +1,14 @@
+#include "Utils/clusterspecifier.h"
+#ifndef LACONIA
+#include <mpi/mpi.h>
+#else
+#include <mpi.h>
+#endif
 #include "Math/lattice.h"
 #include "Math/point.h"
 #include "Math/su3.h"
 #include "ParallelTools/parallel.h"
 #include <cstdio>
-#include <mpi/mpi.h>
 
 Lattice::Lattice(std::array<int, 4> size){
     m_size = size;
@@ -47,7 +52,7 @@ void Lattice::setToUnity(){
     }}}}
 }
 
-SU3& Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign){
+SU3 Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign){
     std::vector<int> idx = {x,y,z,t};
     int mpiShifts = 0, mpiShiftDir = -1, mpiShiftSign;
 
@@ -68,6 +73,9 @@ SU3& Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftS
     // if there is no MPI call
     if(mpiShifts == 0) return m_lattice[idx[0]][idx[1]][idx[2]][idx[3]][mu];
 
+    // create return link
+    SU3 msg;
+
     // if only one MPI call is needed
     if(mpiShifts == 1){
         std::vector<int> sendIdx = {x,y,z,t};
@@ -87,11 +95,11 @@ SU3& Lattice::shift(int x, int y, int z, int t, int mu, int shiftDir, int shiftS
         MPI_Sendrecv(m_lattice[sendIdx[0]][sendIdx[1]][sendIdx[2]][sendIdx[3]][mu].mat.data(), 18, MPI_DOUBLE, Parallel::getNeighbor(mpiShiftDir, mpiShiftSign), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, Parallel::getNeighbor(mpiShiftDir, abs(mpiShiftSign-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return msg;
+        return std::move(msg);
     }
 }
 
-SU3& Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign, int shiftDir2, int shiftSign2){
+SU3 Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shiftSign, int shiftDir2, int shiftSign2){
     std::vector<int> idx = {x,y,z,t};
     int mpiShifts = 0, mpiShiftDir = -1, mpiShiftDir2, mpiShiftSign, mpiShiftSign2;
 
@@ -115,6 +123,9 @@ SU3& Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shift
     // if there is no MPI call
     if(mpiShifts == 0) return m_lattice[idx[0]][idx[1]][idx[2]][idx[3]][mu];
 
+    // create return link
+    SU3 msg;
+
     // if only one MPI call is needed
     if(mpiShifts == 1){
         std::vector<int> sendIdx = {x,y,z,t};
@@ -134,7 +145,7 @@ SU3& Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shift
         MPI_Sendrecv(m_lattice[sendIdx[0]][sendIdx[1]][sendIdx[2]][sendIdx[3]][mu].mat.data(), 18, MPI_DOUBLE, Parallel::getNeighbor(mpiShiftDir, mpiShiftSign), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, Parallel::getNeighbor(mpiShiftDir, abs(mpiShiftSign-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return msg;
+        return std::move(msg);
     }
 
     if(mpiShifts == 2){
@@ -165,6 +176,6 @@ SU3& Lattice::shift2(int x, int y, int z, int t, int mu, int shiftDir, int shift
                      Parallel::getSecondNeighbor(mpiShiftDir, mpiShiftSign, mpiShiftDir2, mpiShiftSign2), 0,
                      msg.mat.data(), 18, MPI_DOUBLE, Parallel::getSecondNeighbor(mpiShiftDir, abs(mpiShiftSign-1), mpiShiftDir2, abs(mpiShiftSign2-1)), 0,
                      MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        return msg;
+        return std::move(msg);
     }
 }

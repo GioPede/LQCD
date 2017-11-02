@@ -1,7 +1,0 @@
-#include "lqcd.h"
-
-// CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
-App::App(){
-
-}
-

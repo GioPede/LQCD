@@ -2,10 +2,8 @@
 #include <vector>
 #include <random>
 #include <array>
-#include "Apps/app.h"
 
-
-class GaugeFieldReader : public App {
+class GaugeFieldReader{
     public:
         GaugeFieldReader(class InputParser* input);
 

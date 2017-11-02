@@ -1,10 +1,7 @@
 #include <cstdio>
-#include <mpi/mpi.h>
 #include "InputOutput/outputterm.h"
-#include "Apps/app.h"
 #include "Math/lattice.h"
 #include "ParallelTools/parallel.h"
-#include "Utils/clusterspecifier.h"
 #include "Observables/observable.h"
 
 namespace LatticeIO {

@@ -1,9 +1,13 @@
-#include <cstdio>
+#include "Utils/clusterspecifier.h"
+#ifndef LACONIA
 #include <mpi/mpi.h>
+#else
+#include <mpi.h>
+#endif
+#include <cstdio>
 #include "InputOutput/outputconf.h"
 #include "Math/lattice.h"
 #include "ParallelTools/parallel.h"
-#include "Utils/clusterspecifier.h"
 
 namespace LatticeIO {
 

@@ -36,7 +36,6 @@ set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/outputconf.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/outputobs.cpp
                ${PROJECT_SOURCE_DIR}/InputOutput/outputterm.cpp
-               ${PROJECT_SOURCE_DIR}/Apps/app.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldfactory.cpp
                ${PROJECT_SOURCE_DIR}/Apps/gaugefieldreader.cpp
                ${PROJECT_SOURCE_DIR}/Apps/wilsonflow.cpp

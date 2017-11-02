@@ -1,5 +1,10 @@
-#include <cstdio>
+#include "Utils/clusterspecifier.h"
+#ifndef LACONIA
 #include <mpi/mpi.h>
+#else
+#include <mpi.h>
+#endif
+#include <cstdio>
 #include "InputOutput/inputconf.h"
 #include "Math/lattice.h"
 #include "ParallelTools/parallel.h"

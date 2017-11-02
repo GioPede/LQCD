@@ -82,17 +82,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            omega = m_act->computeConstant(x, y, z, t, mu)*(*m_lat)(x,y,z,t)[mu];
-            double tr = (omega-~omega).imagTrace()/6.0;
-            omega = (omega-~omega) * 0.5;
-            for(int i = 1; i < 18; i+=2)
-                omega.mat[i] -= tr;
-            for(int i = 0; i < 18; i+=2){
-                double temp = omega.mat[i];
-                omega.mat[i] = -omega.mat[i+1] * 0.5;
-                omega.mat[i+1] = temp * 0.5;
-            }
-            (*m_Z0)(x,y,z,t)[mu] = omega;
+            (*m_Z0)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
         }
     }}}}
 
@@ -112,17 +102,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            omega = m_act->computeConstant(x, y, z, t, mu)*(*m_lat)(x,y,z,t)[mu];
-            double tr = (omega-~omega).imagTrace()/6.0;
-            omega = (omega-~omega) * 0.5;
-            for(int i = 1; i < 18; i+=2)
-                omega.mat[i] -= tr;
-            for(int i = 0; i < 18; i+=2){
-                double temp = omega.mat[i];
-                omega.mat[i] = -omega.mat[i+1] * 0.5;
-                omega.mat[i+1] = temp * 0.5;
-            }
-            (*m_Z1)(x,y,z,t)[mu] = omega;
+            (*m_Z1)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
         }
     }}}}
 
@@ -143,17 +123,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            omega = m_act->computeConstant(x, y, z, t, mu)*(*m_lat)(x,y,z,t)[mu];
-            double tr = (omega-~omega).imagTrace()/6.0;
-            omega = (omega-~omega) * 0.5;
-            for(int i = 1; i < 18; i+=2)
-                omega.mat[i] -= tr;
-            for(int i = 0; i < 18; i+=2){
-                double temp = omega.mat[i];
-                omega.mat[i] = -omega.mat[i+1] * 0.5;
-                omega.mat[i+1] = temp * 0.5;
-            }
-            (*m_Z2)(x,y,z,t)[mu] = omega;
+            (*m_Z2)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
         }
     }}}}
 

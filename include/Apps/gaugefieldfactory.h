@@ -1,9 +1,8 @@
 #pragma once
 #include <vector>
 #include <random>
-#include "Apps/app.h"
 
-class GaugeFieldFactory : public App {
+class GaugeFieldFactory {
     public:
         GaugeFieldFactory(class InputParser* input);
 
@@ -41,7 +40,7 @@ private:
         char m_startType;
         void MCUpdate();
         void updateLink(int x, int y, int z, int t, int mu);
-        struct SU3 newLink, constPart;
+        struct SU3 newLink;
         void computeObservables();
         void thermalize();
         void sampleConf();

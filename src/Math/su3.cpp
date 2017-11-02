@@ -1,24 +1,21 @@
 #include "Math/su3.h"
 #include "Math/complex.h"
-#include "Math/random.h"
 #include <ctime>
 #include <cmath>
 #include <cstdio>
 #include <utility>
+#include <random>
 
-/*******************************************************
-* Functions between SU3 elements, defined as arrays.
-********************************************************/
 std::random_device rd;
 std::mt19937_64 randomGen(rd());
 std::uniform_real_distribution<double> randomUniformInterval(-1.0, 1.0);
-
 
 SU3 R, S, T;
 SU3 I, Q2, Q3;
 SU3 F0(0.0), F1(0.0), F2(0.0);
 double x[4];
 double norm;
+
 
 SU3::SU3() noexcept{
 }
@@ -31,178 +28,30 @@ SU3::SU3(double value) noexcept{
 SU3::SU3(SU3 const & source) noexcept : mat(source.mat){
 }
 
-SU3::SU3(SU3&& source) noexcept: mat(std::move(source.mat)){
+SU3::SU3(SU3 && source) noexcept : mat(source.mat){
 }
-
-// assignment
-SU3& SU3::operator=(SU3&& other) noexcept{
-    mat = other.mat;
-    return *this;
-}
-
-SU3& SU3::operator=(const SU3& other) noexcept{
-    mat = other.mat;
-    return *this;
-}
-
-// sum
-SU3& SU3::operator+=(SU3&& other) noexcept{
-    for(int i = 0; i < 18; i++)
-        mat[i] += other.mat[i];
-    return *this;
-}
-
-SU3& SU3::operator+=(const SU3& other) noexcept{
-    for(int i = 0; i < 18; i++)
-        mat[i] += other.mat[i];
-    return *this;
-}
-
-// subtraction
-SU3& SU3::operator-=(SU3&& other) noexcept{
-    for(int i = 0; i < 18; i++)
-        mat[i] -= other.mat[i];
-    return *this;
-}
-
-SU3& SU3::operator-=(const SU3& other) noexcept{
-    for(int i = 0; i < 18; i++)
-        mat[i] -= other.mat[i];
-    return *this;
-}
-
-// multiplication
-SU3& SU3::operator*=(const SU3& other) noexcept{
-    SU3 result;
-    /*
-    //REAL
-    result.mat[0] =  mat[0] * other.mat[0] - mat[1]*other.mat[1] + mat[2] * other.mat[6] - mat[3]*other.mat[7] + mat[4] * other.mat[12] - mat[5]*other.mat[13];
-    result.mat[2] =  mat[0] * other.mat[2] - mat[1]*other.mat[3] + mat[2] * other.mat[8] - mat[3]*other.mat[9] + mat[4] * other.mat[14] - mat[5]*other.mat[15];
-    result.mat[4] =  mat[0] * other.mat[4] - mat[1]*other.mat[5] + mat[2] * other.mat[10] - mat[3]*other.mat[11] + mat[4] * other.mat[16] - mat[5]*other.mat[17];
-    result.mat[6] =  mat[6] * other.mat[0] - mat[7]*other.mat[1] + mat[8] * other.mat[6] - mat[9]*other.mat[7] + mat[10] * other.mat[12] - mat[11]*other.mat[13];
-    result.mat[8] =  mat[6] * other.mat[2] - mat[7]*other.mat[3] + mat[8] * other.mat[8] - mat[9]*other.mat[9] + mat[10] * other.mat[14] - mat[11]*other.mat[15];
-    result.mat[10] =  mat[6] * other.mat[4] - mat[7]*other.mat[5] + mat[8] * other.mat[10] - mat[9]*other.mat[11] + mat[10] * other.mat[16] - mat[11]*other.mat[17];
-    result.mat[12] =  mat[12] * other.mat[0] - mat[13]*other.mat[1] + mat[14] * other.mat[6] - mat[15]*other.mat[7] + mat[16] * other.mat[12] - mat[17]*other.mat[13];
-    result.mat[14] =  mat[12] * other.mat[2] - mat[13]*other.mat[3] + mat[14] * other.mat[8] - mat[15]*other.mat[9] + mat[16] * other.mat[14] - mat[17]*other.mat[15];
-    result.mat[16] =  mat[12] * other.mat[4] - mat[13]*other.mat[5] +  mat[14] * other.mat[10] - mat[15]*other.mat[11] + mat[16] * other.mat[16] - mat[17]*other.mat[17];
-
-
-    // COMPLEX
-    result.mat[1] =  mat[0] * other.mat[1] + mat[1]*other.mat[0] + mat[2] * other.mat[7] + mat[3]*other.mat[6] + mat[4] * other.mat[13] + mat[5]*other.mat[12];
-    result.mat[3] =  mat[0] * other.mat[3] + mat[1]*other.mat[2] + mat[2] * other.mat[9] + mat[3]*other.mat[8] + mat[4] * other.mat[15] + mat[5]*other.mat[14];
-    result.mat[5] =  mat[0] * other.mat[5] + mat[1]*other.mat[4] + mat[2] * other.mat[11] + mat[3]*other.mat[10] + mat[4] * other.mat[17] + mat[5]*other.mat[16];
-    result.mat[7] =  mat[6] * other.mat[1] + mat[7]*other.mat[0] + mat[8] * other.mat[7] + mat[9]*other.mat[6] + mat[10] * other.mat[13] + mat[11]*other.mat[12];
-    result.mat[9] =  mat[6] * other.mat[3] + mat[7]*other.mat[2] + mat[8] * other.mat[9] + mat[9]*other.mat[8] + mat[10] * other.mat[15] + mat[11]*other.mat[14];
-    result.mat[11] =  mat[6] * other.mat[5] + mat[7]*other.mat[4] + mat[8] * other.mat[11] + mat[9]*other.mat[10] + mat[10] * other.mat[17] + mat[11]*other.mat[16];
-    result.mat[13] =  mat[12] * other.mat[1] + mat[13]*other.mat[0] + mat[14] * other.mat[7] + mat[15]*other.mat[6] + mat[16] * other.mat[13] + mat[17]*other.mat[12];
-    result.mat[15] =  mat[12] * other.mat[3] + mat[13]*other.mat[2] + mat[14] * other.mat[9] + mat[15]*other.mat[8] + mat[16] * other.mat[15] + mat[17]*other.mat[14];
-    result.mat[17] =  mat[12] * other.mat[5] + mat[13]*other.mat[4] + mat[14] * other.mat[11] +  mat[15]*other.mat[10] + mat[16] * other.mat[17] + mat[17]*other.mat[16];
-*/
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            result.mat[2 * (3*i + j)] = 0;
-            result.mat[2 * (3*i + j) + 1] = 0;
-            for(int k = 0; k < 3; k++){
-                result.mat[2 * (3*i + j)] += mat[2 * (3*i + k)] * other.mat[2 * (3*k + j)]
-                                       -mat[2 * (3*i + k) + 1] * other.mat[2 * (3*k + j) + 1];
-                result.mat[2 * (3*i + j) + 1] += mat[2 * (3*i + k)] * other.mat[2 * (3*k + j) + 1]
-                                           +mat[2 * (3*i + k) + 1] * other.mat[2 * (3*k + j)];
-
-            }
-        }
-    }
-    *this = result;
-    return *this;
-}
-
-// multiplication
-SU3& SU3::operator*=(SU3&& other) noexcept{
-    SU3 result;
-    /*
-    //REAL
-    result.mat[0] =  mat[0] * other.mat[0] - mat[1]*other.mat[1] + mat[2] * other.mat[6] - mat[3]*other.mat[7] + mat[4] * other.mat[12] - mat[5]*other.mat[13];
-    result.mat[2] =  mat[0] * other.mat[2] - mat[1]*other.mat[3] + mat[2] * other.mat[8] - mat[3]*other.mat[9] + mat[4] * other.mat[14] - mat[5]*other.mat[15];
-    result.mat[4] =  mat[0] * other.mat[4] - mat[1]*other.mat[5] + mat[2] * other.mat[10] - mat[3]*other.mat[11] + mat[4] * other.mat[16] - mat[5]*other.mat[17];
-    result.mat[6] =  mat[6] * other.mat[0] - mat[7]*other.mat[1] + mat[8] * other.mat[6] - mat[9]*other.mat[7] + mat[10] * other.mat[12] - mat[11]*other.mat[13];
-    result.mat[8] =  mat[6] * other.mat[2] - mat[7]*other.mat[3] + mat[8] * other.mat[8] - mat[9]*other.mat[9] + mat[10] * other.mat[14] - mat[11]*other.mat[15];
-    result.mat[10] =  mat[6] * other.mat[4] - mat[7]*other.mat[5] + mat[8] * other.mat[10] - mat[9]*other.mat[11] + mat[10] * other.mat[16] - mat[11]*other.mat[17];
-    result.mat[12] =  mat[12] * other.mat[0] - mat[13]*other.mat[1] + mat[14] * other.mat[6] - mat[15]*other.mat[7] + mat[16] * other.mat[12] - mat[17]*other.mat[13];
-    result.mat[14] =  mat[12] * other.mat[2] - mat[13]*other.mat[3] + mat[14] * other.mat[8] - mat[15]*other.mat[9] + mat[16] * other.mat[14] - mat[17]*other.mat[15];
-    result.mat[16] =  mat[12] * other.mat[4] - mat[13]*other.mat[5] +  mat[14] * other.mat[10] - mat[15]*other.mat[11] + mat[16] * other.mat[16] - mat[17]*other.mat[17];
-
-
-    // COMPLEX
-    result.mat[1] =  mat[0] * other.mat[1] + mat[1]*other.mat[0] + mat[2] * other.mat[7] + mat[3]*other.mat[6] + mat[4] * other.mat[13] + mat[5]*other.mat[12];
-    result.mat[3] =  mat[0] * other.mat[3] + mat[1]*other.mat[2] + mat[2] * other.mat[9] + mat[3]*other.mat[8] + mat[4] * other.mat[15] + mat[5]*other.mat[14];
-    result.mat[5] =  mat[0] * other.mat[5] + mat[1]*other.mat[4] + mat[2] * other.mat[11] + mat[3]*other.mat[10] + mat[4] * other.mat[17] + mat[5]*other.mat[16];
-    result.mat[7] =  mat[6] * other.mat[1] + mat[7]*other.mat[0] + mat[8] * other.mat[7] + mat[9]*other.mat[6] + mat[10] * other.mat[13] + mat[11]*other.mat[12];
-    result.mat[9] =  mat[6] * other.mat[3] + mat[7]*other.mat[2] + mat[8] * other.mat[9] + mat[9]*other.mat[8] + mat[10] * other.mat[15] + mat[11]*other.mat[14];
-    result.mat[11] =  mat[6] * other.mat[5] + mat[7]*other.mat[4] + mat[8] * other.mat[11] + mat[9]*other.mat[10] + mat[10] * other.mat[17] + mat[11]*other.mat[16];
-    result.mat[13] =  mat[12] * other.mat[1] + mat[13]*other.mat[0] + mat[14] * other.mat[7] + mat[15]*other.mat[6] + mat[16] * other.mat[13] + mat[17]*other.mat[12];
-    result.mat[15] =  mat[12] * other.mat[3] + mat[13]*other.mat[2] + mat[14] * other.mat[9] + mat[15]*other.mat[8] + mat[16] * other.mat[15] + mat[17]*other.mat[14];
-    result.mat[17] =  mat[12] * other.mat[5] + mat[13]*other.mat[4] + mat[14] * other.mat[11] +  mat[15]*other.mat[10] + mat[16] * other.mat[17] + mat[17]*other.mat[16];
-
-    */
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            result.mat[2 * (3*i + j)] = 0;
-            result.mat[2 * (3*i + j) + 1] = 0;
-            for(int k = 0; k < 3; k++){
-                result.mat[2 * (3*i + j)] += mat[2 * (3*i + k)] * other.mat[2 * (3*k + j)]
-                                       -mat[2 * (3*i + k) + 1] * other.mat[2 * (3*k + j) + 1];
-                result.mat[2 * (3*i + j) + 1] += mat[2 * (3*i + k)] * other.mat[2 * (3*k + j) + 1]
-                                           +mat[2 * (3*i + k) + 1] * other.mat[2 * (3*k + j)];
-
-            }
-        }
-    }
-    *this = result;
-    return *this;
-}
-
-
-// sum with scalar
-SU3& SU3::operator+=( const double scalar ) noexcept{
-    for(auto& i : mat)
-        i += scalar;
-    return *this;
-}
-
-// subtraction with scalar
-SU3& SU3::operator-=( const double scalar ) noexcept{
-    for(auto& i : mat)
-        i -= scalar;
-    return *this;
-}
-
-// sum with scalar
-SU3& SU3::operator*=( const double scalar ) noexcept{
-    for(auto& i : mat)
-        i *= scalar;
-    return *this;
-}
-
-
 
 // Hermitean Conjugate
-SU3& operator~(const SU3& a){
+SU3 operator~(const SU3& a){
+    SU3 c;
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
-            R.mat[2 * (3*i + j)] = a.mat[2 * (3*j + i)];
-            R.mat[2 * (3*i + j) + 1] = -a.mat[2 * (3*j + i) + 1];
+            c.mat[2 * (3*i + j)] = a.mat[2 * (3*j + i)];
+            c.mat[2 * (3*i + j) + 1] = -a.mat[2 * (3*j + i) + 1];
         }
     }
-    return R;
+    return std::move(c);
 }
 
-SU3& operator~(SU3&& a){
+SU3 operator~(SU3&& a){
+    SU3 c;
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
-            R.mat[2 * (3*i + j)] = a.mat[2 * (3*j + i)];
-            R.mat[2 * (3*i + j) + 1] = -a.mat[2 * (3*j + i) + 1];
+            c.mat[2 * (3*i + j)] = a.mat[2 * (3*j + i)];
+            c.mat[2 * (3*i + j) + 1] = -a.mat[2 * (3*j + i) + 1];
         }
     }
-    return R;
+    return std::move(c);
 }
 
 void SU3::printSU3(){
@@ -237,8 +86,6 @@ double SU3::realTrace(){
 double SU3::imagTrace(){
     return mat[1] + mat[9] + mat[17];
 }
-
-
 
 
 void SU3::setSU3Random(){
@@ -292,7 +139,6 @@ void SU3::setSU3Random(){
         mat[12+2*i+1] = u3[i].imag;
     }
 }
-
 
 
 SU3 getRandomTransformation(double epsilon){

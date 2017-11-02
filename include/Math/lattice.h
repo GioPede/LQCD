@@ -14,12 +14,11 @@ public:
     std::array<int, 4>& getSize() { return m_size; }
     void setToRandom();
     void setToUnity();
-    class SU3& shift(int x, int y, int z, int t, int mu,
+    class SU3 shift(int x, int y, int z, int t, int mu,
                      int shiftDir, int shiftSign);
-    class SU3& shift2(int x, int y, int z, int t, int mu,
+    class SU3 shift2(int x, int y, int z, int t, int mu,
                       int shiftDir, int shiftSign, int shiftDir2, int shiftSign2);
 
 private:
     std::array<int, 4> m_size;
-    SU3 msg;
 };

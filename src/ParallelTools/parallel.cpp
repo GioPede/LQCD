@@ -1,5 +1,10 @@
-#include "ParallelTools/parallel.h"
+#include "Utils/clusterspecifier.h"
+#ifndef LACONIA
 #include <mpi/mpi.h>
+#else
+#include <mpi.h>
+#endif
+#include "ParallelTools/parallel.h"
 #include <array>
 
 // Initialize static variables

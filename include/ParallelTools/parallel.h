@@ -1,6 +1,11 @@
 #pragma once
-#include <array>
+#include "Utils/clusterspecifier.h"
+#ifndef LACONIA
 #include <mpi/mpi.h>
+#else
+#include <mpi.h>
+#endif
+#include <array>
 
 class Parallel{
 // Public interface of the Parallel class

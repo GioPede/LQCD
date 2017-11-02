@@ -7,6 +7,5 @@
 #define OUT_PREFIX "conf"
 #endif
 #ifdef LACONIA
-#define OUT_PREFIX "$SCRATCH/pgfg/conf"
+#define OUT_PREFIX "/mnt/ls15/scratch/users/pederiva/conf/"
 #endif
-

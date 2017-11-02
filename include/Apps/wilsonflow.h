@@ -2,10 +2,8 @@
 #include <vector>
 #include <random>
 #include <array>
-#include "Apps/app.h"
 
-
-class WilsonFlow : public App {
+class WilsonFlow{
     public:
         WilsonFlow(class InputParser* input);
 

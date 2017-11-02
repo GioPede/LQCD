@@ -1,4 +1,9 @@
+#include "Utils/clusterspecifier.h"
+#ifndef LACONIA
 #include <mpi/mpi.h>
+#else
+#include <mpi.h>
+#endif
 #include <vector>
 #include <cstdio>
 #include <chrono>
@@ -160,14 +165,14 @@ void GaugeFieldFactory::MCUpdate(){
 // TRIES TO UPDATE A SINGLE LINK 10 TIMES (HITS)
 void GaugeFieldFactory::updateLink(int x,int y, int z, int t, int mu){
     // get the local staples' sum
-    constPart = m_act->computeConstant(x, y, z, t, mu);
+    m_act->computeStaples(x, y, z, t, mu);
 
     // try 10 hits on the current link
     for(int i = 0; i < 10; i++){
         newLink = getRandomTransformation(m_epsilon) * (*m_lat)(x,y,z,t)[mu] ;
 
         // metropolis accept/reject
-        if( exp(-m_act->compute(x, y, z, t, mu, newLink, constPart)) > randomUniform(*m_random)){
+        if( exp(-m_act->compute(x, y, z, t, mu, newLink)) > randomUniform(*m_random)){
             (*m_lat)(x,y,z,t)[mu] = newLink;
             m_accepted++;
         }

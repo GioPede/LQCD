@@ -25,10 +25,10 @@ SU3::SU3(double value) noexcept{
         i = value;
 }
 
-SU3::SU3(SU3 const & source) noexcept : mat(source.mat){
+SU3::SU3(SU3 const& source) noexcept : mat(source.mat){
 }
 
-SU3::SU3(SU3 && source) noexcept : mat(source.mat){
+SU3::SU3(SU3&& source) noexcept : mat(source.mat){
 }
 
 // Hermitean Conjugate
@@ -222,7 +222,7 @@ SU3 getRandomTransformation(double epsilon){
     T.mat[11] = x[1];
     T.mat[15] = x[1];
 
-    return R*S*T;
+    return std::move(R*S*T);
 }
 
 /*

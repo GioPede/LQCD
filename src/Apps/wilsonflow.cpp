@@ -20,9 +20,7 @@ WilsonFlow::WilsonFlow(InputParser* input){
     m_inputConfList = input->inputConfList;
 
     m_lat = new Lattice(m_size);
-    m_Z0 = new Lattice(m_size);
-    m_Z1 = new Lattice(m_size);
-    m_Z2 = new Lattice(m_size);
+    m_Z = new Lattice(m_size);
 
     addObservable(new Plaquette());
     addObservable(new EnergyDensity());
@@ -82,7 +80,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_Z0)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
+            (*m_Z)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
         }
     }}}}
 
@@ -92,7 +90,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z0)(x,y,z,t)[mu] * epsilon * (1.0/4.0));
+            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z)(x,y,z,t)[mu] * epsilon * (1.0/4.0));
         }
     }}}}
 
@@ -102,7 +100,8 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_Z1)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
+            (*m_Z)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu)*(8.0/9.0)
+                                - (*m_Z)(x,y,z,t)[mu]*(17.0/36.0);
         }
     }}}}
 
@@ -112,8 +111,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_lat)(x,y,z,t)[mu] *= exp(((*m_Z1)(x,y,z,t)[mu]*(8.0/9.0)
-                                         -(*m_Z0)(x,y,z,t)[mu]*(17.0/36.0))*epsilon);
+            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z)(x,y,z,t)[mu]*epsilon);
         }
     }}}}
 
@@ -123,7 +121,8 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_Z2)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu);
+            (*m_Z)(x,y,z,t)[mu] = m_act->computeDerivative(x,y,z,t,mu)*(3.0/4.0)
+                                - (*m_Z)(x,y,z,t)[mu];
         }
     }}}}
 
@@ -133,9 +132,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_lat)(x,y,z,t)[mu] *= exp(((*m_Z2)(x,y,z,t)[mu]*(3.0/4.0)
-                                         -(*m_Z1)(x,y,z,t)[mu]*(8.0/9.0)
-                                         +(*m_Z0)(x,y,z,t)[mu]*(17.0/36.0))*epsilon);
+            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z)(x,y,z,t)[mu] *epsilon);
         }
     }}}}
 }

@@ -25,9 +25,7 @@ class WilsonFlow{
         // member classes
         class Lattice* m_lat = nullptr;
         // flow lattices
-        class Lattice* m_Z0 = nullptr;
-        class Lattice* m_Z1 = nullptr;
-        class Lattice* m_Z2 = nullptr;
+        class Lattice* m_Z = nullptr;
         class Action* m_act = nullptr;
         std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;

@@ -34,12 +34,11 @@ void Plaquette::compute(){
             for(int y = 0; y < m_size[1]; y++){
             for(int z = 0; z < m_size[2]; z++){
             for(int t = 0; t < m_size[3]; t++){
-                plaq.setSU3Identity();
-                plaq *= (*m_lat)(x,y,z,t)[mu];
-                plaq *= m_lat->shift(x,y,z,t,nu, mu, 1);
-                plaq *= ~(m_lat->shift(x,y,z,t,mu, nu, 1));
-                plaq *= ~(*m_lat)(x,y,z,t)[nu];
-                m_value += plaq.realTrace();
+                m_value += (   (*m_lat)(x,y,z,t)[mu]
+                             *   m_lat->shift(x,y,z,t,nu, mu, 1)
+                             * ~(m_lat->shift(x,y,z,t,mu, nu, 1))
+                             * ~(*m_lat)(x,y,z,t)[nu]
+                           ).realTrace();
             }}}}
         }
     }

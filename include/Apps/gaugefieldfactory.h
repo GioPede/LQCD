@@ -24,7 +24,6 @@ private:
         class Action* m_act = nullptr;
         std::vector<class Observable*> m_obs;
         std::vector<double> m_obsValues;
-        std::mt19937* m_random = nullptr;
 
         // member variables
         std::array<int, 4> m_size;

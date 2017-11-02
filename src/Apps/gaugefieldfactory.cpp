@@ -7,10 +7,7 @@
 #include <vector>
 #include <cstdio>
 #include <chrono>
-#include <random>
 #include "lqcd.h"
-
-std::uniform_real_distribution<double> randomUniform(0.0, 1.0);
 
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
 GaugeFieldFactory::GaugeFieldFactory(InputParser* input){
@@ -24,11 +21,6 @@ GaugeFieldFactory::GaugeFieldFactory(InputParser* input){
     m_correlationSteps = m_MCSteps / m_confs;
     m_outDir = input->outDir;
     m_startType = input->startType;
-
-    // PRNG initialization
-    std::random_device rd;
-    m_random = new std::mt19937(Parallel::rank()+rd());
-
 
     // initialize observables list
     addObservable(new Plaquette());
@@ -169,10 +161,10 @@ void GaugeFieldFactory::updateLink(int x,int y, int z, int t, int mu){
 
     // try 10 hits on the current link
     for(int i = 0; i < 10; i++){
-        newLink = getRandomTransformation(m_epsilon) * (*m_lat)(x,y,z,t)[mu] ;
+        newLink = Random::randSU3Transf(m_epsilon) * (*m_lat)(x,y,z,t)[mu] ;
 
         // metropolis accept/reject
-        if( exp(-m_act->compute(x, y, z, t, mu, newLink)) > randomUniform(*m_random)){
+        if( exp(-m_act->compute(x, y, z, t, mu, newLink)) > Random::randUniform()){
             (*m_lat)(x,y,z,t)[mu] = newLink;
             m_accepted++;
         }

@@ -8,6 +8,7 @@
 #include "Math/point.h"
 #include "Math/su3.h"
 #include "ParallelTools/parallel.h"
+#include "Math/random.h"
 #include <cstdio>
 
 Lattice::Lattice(std::array<int, 4> size){
@@ -36,7 +37,7 @@ void Lattice::setToRandom(){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            m_lattice[x][y][z][t][mu].setSU3Random();
+            m_lattice[x][y][z][t][mu] = Random::randSU3();
         }
     }}}}
 }

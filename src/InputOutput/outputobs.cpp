@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <boost/filesystem.hpp>
 #include "Observables/observable.h"
 #include "InputOutput/outputobs.h"
 #include "Math/lattice.h"
@@ -8,10 +9,17 @@ namespace LatticeIO {
 
     char OutputObs::fileName[1024];
     FILE* OutputObs::m_file;
+    std::string OutputObs::m_outputDir;
+
+    void OutputObs::setOutputDir(std::string outputDir){
+        m_outputDir = outputDir;
+        boost::filesystem::create_directory(m_outputDir);
+        boost::filesystem::create_directory(m_outputDir+"/flow");
+    }
 
     void OutputObs::initialize(std::vector<Observable*>& obsList){
         if(Parallel::rank() == 0){
-            sprintf(fileName, "%s/observables.dat", OUT_PREFIX);
+            sprintf(fileName, "%s/observables.dat", m_outputDir.c_str());
             m_file = fopen(fileName, "w+");
             fprintf(m_file, "Step\t");
             for(auto& obs : obsList)
@@ -35,7 +43,7 @@ namespace LatticeIO {
     void OutputObs::writeFlowObs(int confNum, std::vector<Observable*>& obsList, std::vector<std::vector<double>>& obsMatrix){
         if(Parallel::rank() == 0){
             char flowFileName [1024];
-            sprintf(flowFileName, "%s/flow/conf%04d.dat", OUT_PREFIX, confNum);
+            sprintf(flowFileName, "%s/flow/conf%04d.dat", m_outputDir.c_str(), confNum);
             FILE* flowOut = fopen(flowFileName, "w+");
             fprintf(flowOut, "Flow Time\t");
             for(auto& obs : obsList)

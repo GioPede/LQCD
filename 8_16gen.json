@@ -1,0 +1,36 @@
+{
+    "LatticeSize" : {
+        "x" : 8,
+        "y" : 8,
+        "z" : 8,
+        "t" : 8
+    },
+    "SubLatticeSize" : {
+        "x" : 4,
+        "y" : 4,
+        "z" : 4,
+        "t" : 4
+    },
+    "App" : {
+        "type"   : "PGFG",
+        "params" : {
+            "startType"  : "Cold",
+            "MCSteps"    : 100,
+            "NConf"      : 5,
+            "SU3eps"     : 0.2,
+            "thermSteps" : 20
+        }
+    },
+    "Action" : {
+        "type"   : "puregauge",
+        "params" : {
+            "beta" : 6.0
+        }
+    },
+    "Observables" : [
+        "myplaquette",
+        "topologicalcharge",
+        "energydensity"
+    ],
+    "OutputDir" : "conf/8_16" 
+}

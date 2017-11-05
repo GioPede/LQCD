@@ -1,46 +1,36 @@
-#include "Utils/clusterspecifier.h"
-#ifndef LACONIA
-#include <mpi/mpi.h>
-#else
-#include <mpi.h>
-#endif
 #include <vector>
 #include <cstdio>
 #include <chrono>
 #include "lqcd.h"
 
-// CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
-GaugeFieldFactory::GaugeFieldFactory(InputParser* input){
-
-    // set parameters from input
-    m_size = input->subLatticeSize;
-    m_MCSteps = input->MCSteps;
-    m_epsilon = input->MCUpdateParameter;
-    m_thermSteps = input->thermSteps;
-    m_confs = input->nConf;
+GaugeFieldFactory::GaugeFieldFactory(int MCSteps, int thermSteps,
+                                     int NConf, double epsilon,
+                                     std::string startType)
+                 : App() {
+    m_MCSteps = MCSteps;
+    m_thermSteps = thermSteps;
+    m_confs = NConf;
     m_correlationSteps = m_MCSteps / m_confs;
-    m_outDir = input->outDir;
-    m_startType = input->startType;
+    m_epsilon = epsilon;
+    m_startType = startType;
+}
 
-    // initialize observables list
-    addObservable(new Plaquette());
-    addObservable(new TopologicalCharge());
+void GaugeFieldFactory::execute(){
+    initialize();
+    generateConfigurations();
+}
 
-    // CREATE THE LATTICE AND INITIALIZE OBJECTS
-    m_lat = new Lattice(m_size);
-    if(m_startType == 'H' || m_startType == 'h')
-        m_lat->setToRandom();
-    else if(m_startType == 'C' || m_startType == 'c')
+void GaugeFieldFactory::initialize(){
+    if(m_startType == "Cold")
         m_lat->setToUnity();
-    for(int i = 0; i < m_obs.size(); i++){
-        m_obs[i]->initObservable(m_lat);
-    }
+    else if (m_startType == "Hot")
+        m_lat->setToRandom();
 
-    // initialize action
-    if(std::string(input->actionTag) == "puregauge")
-        m_act = new PureGauge(m_lat, input->beta);
+    for(auto& obs : m_obs)
+        obs->initObservable(m_lat);
+    m_act->initAction(m_lat);
+    m_obsValues.resize(m_obs.size());
 
-    LatticeUnits::initialize(input->beta);
     LatticeIO::OutputTerm::printInitialConditions();
     LatticeIO::OutputObs::initialize(m_obs);
 }
@@ -173,20 +163,11 @@ void GaugeFieldFactory::updateLink(int x,int y, int z, int t, int mu){
 }
 
 void GaugeFieldFactory::computeObservables(){
-    for(int i = 0; i < m_obs.size(); i++){
-        m_obs[i]->compute();
-        double value = m_obs[i]->value();
-        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, Parallel::cartCoordComm());
-    }
-    m_obsValues[0] /= Parallel::activeProcs();
+    for(auto& obs : m_obs)
+        obs->compute();
 }
 
 // GETTERS AND SETTERS
 Point& GaugeFieldFactory::getLatticeSite(int x, int y, int z, int t){
     return (*m_lat)(x,y,z,t);
-}
-
-void GaugeFieldFactory::addObservable(Observable *observable){
-    m_obs.push_back(observable);
-    m_obsValues.push_back(0.0);
 }

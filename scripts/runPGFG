@@ -113,7 +113,7 @@ if [[ -n ${EMAIL} ]]; then
 fi
 
 # Write the main command line
-echo "mpirun -np $PROCS build/pgfg $INPUT $NAME " >> $LAUNCHFILE
+echo "mpirun -np $PROCS build/LatticeQCD $INPUT $NAME " >> $LAUNCHFILE
 #sbatch $LAUNCHFILE
 bash $LAUNCHFILE
 #rm $LAUNCHFILE

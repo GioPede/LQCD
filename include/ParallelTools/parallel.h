@@ -11,8 +11,9 @@ class Parallel{
 // Public interface of the Parallel class
 public:
     // Init-Final methods
-    static void initialize(std::array<int, 4> latticeSize,
-                           std::array<int, 4> subLatticeSize);
+    static void initialize();
+    static void createGeometry(std::array<int, 4> latticeSize,
+                               std::array<int, 4> subLatticeSize);
     static void finalize();
 
     // Data members

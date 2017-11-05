@@ -4,13 +4,15 @@
 // should inherit from this class.
 class Observable{
 public:
-    Observable();
-    class Lattice* m_lat = nullptr;
-
     // virtual methods
-    virtual void initObservable(class Lattice *lattice) = 0;
     virtual void compute() = 0;
-    virtual double value() = 0;
     virtual const char* getName() = 0;
+    virtual void initObservable(class Lattice *lattice) = 0;
+    double value();
+
+protected:
+    void gatherResults();
+    class Lattice* m_lat = nullptr;
+    double m_value;
 };
 

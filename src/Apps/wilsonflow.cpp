@@ -13,27 +13,37 @@
 #include "lqcd.h"
 
 
+void WilsonFlow::execute(){
+    initialize();
+    flowConfigurations();
+}
+
 // CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
 WilsonFlow::WilsonFlow(InputParser* input){
-    m_size = input->subLatticeSize;
-    m_outDir = input->outDir;
     m_inputConfList = input->inputConfList;
+}
 
+WilsonFlow::WilsonFlow(double tauFinal, double epsilon){
+    m_epsilon = epsilon;
+    m_tauFinal = tauFinal;
+}
+
+void WilsonFlow::initialize(){
+    for(auto& obs : m_obs)
+        obs->initObservable(m_lat);
+    m_act->initAction(m_lat);
+    m_obsValues.resize(m_obs.size());
+
+    LatticeIO::InputConf::getInputList(m_inputConfList);
+    LatticeIO::OutputObs::initialize(m_obs);
+    LatticeIO::OutputTerm::printInitialConditions();
+}
+
+
+void WilsonFlow::createLattice(std::array<int,4> latticeSize){
+    m_size = latticeSize;
     m_lat = new Lattice(m_size);
     m_Z = new Lattice(m_size);
-
-    addObservable(new Plaquette());
-    addObservable(new EnergyDensity());
-    addObservable(new TopologicalCharge());
-    for(int i = 0; i < m_obs.size(); i++){
-        m_obs[i]->initObservable(m_lat);
-    }
-
-    // initialize action
-    if(std::string(input->actionTag) == "puregauge")
-        m_act = new PureGauge(m_lat, input->beta);
-
-    LatticeUnits::initialize(input->beta);
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'

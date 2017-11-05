@@ -24,8 +24,7 @@ std::array< std::array<std::array<std::array<int, 2>, 4>, 2>, 4> Parallel::m_sec
 
 
 // Initialization
-void Parallel::initialize(std::array<int, 4> latticeSize,
-                          std::array<int, 4> subLatticeSize){
+void Parallel::initialize(){
     // initialize MPI
     int argn = 1;
     char** argv;
@@ -34,6 +33,10 @@ void Parallel::initialize(std::array<int, 4> latticeSize,
     // Get rank and number of processors
     MPI_Comm_rank(MPI_COMM_WORLD, &m_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &m_numProcs);
+}
+
+void Parallel::createGeometry(std::array<int, 4> latticeSize,
+                              std::array<int, 4> subLatticeSize){
 
     // Fix sizes from input
     m_latticeSubSize = subLatticeSize;
@@ -41,6 +44,7 @@ void Parallel::initialize(std::array<int, 4> latticeSize,
 
     // Create castesian coordinates neighbor lists
     createNeighborLists();
+
 }
 
 // Finalize Parallelization

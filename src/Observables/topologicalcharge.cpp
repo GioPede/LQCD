@@ -112,10 +112,10 @@ void TopologicalCharge::compute(){
             }}}}
         }}}
     }}}}
-    m_value *= m_norm; //* 0.0625* 0.0625* 0.0625* 0.0625;
+    m_value = m_value*m_value*m_norm; //* 0.0625* 0.0625* 0.0625* 0.0625;
 
    // m_value = 0.197 / 0.0625*pow(0.197*1.5, 0.25) * pow(m_value*m_value, 0.25);
-
+    gatherResults();
 }
 
 

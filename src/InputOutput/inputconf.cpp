@@ -5,6 +5,7 @@
 #include <mpi.h>
 #endif
 #include <cstdio>
+#include<boost/filesystem.hpp>
 #include "InputOutput/inputconf.h"
 #include "Math/lattice.h"
 #include "ParallelTools/parallel.h"
@@ -12,7 +13,21 @@
 
 namespace LatticeIO {
 
-        int InputConf::m_linkSize = 72 * sizeof(double);
+    int InputConf::m_linkSize = 72 * sizeof(double);
+    std::string InputConf::m_inputDir;
+
+    void InputConf::setInputDir(std::string inputDir){
+        m_inputDir = inputDir;
+    }
+
+    //if (boost::filesystem::is_directory(inputPath))
+
+    void InputConf::getInputList(std::vector<std::string>& inputConfList){
+        boost::filesystem::path inputPath = m_inputDir;
+        for (boost::filesystem::directory_entry& x : boost::filesystem::directory_iterator(inputPath))
+            if(x.path().extension() == ".bin")
+                inputConfList.push_back(x.path().string());
+    }
 
     // Read a single file for every sublattice (for testing)
     void InputConf::readSubLattice(Lattice& lattice, int confNum){

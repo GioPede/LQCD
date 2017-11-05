@@ -9,12 +9,10 @@ public:
     TopologicalCharge();
     void initObservable(Lattice *lattice);
     void compute();
-    double value() { return m_value; }
     const char* getName();
 
 private:
     std::array<int, 4> m_size;
-    double m_value = 0.0;
     // auxiliary variables
     double m_norm;
     SU3 Gmn, Grs;

@@ -13,14 +13,9 @@
 #include "lqcd.h"
 
 
-// CONSTRUCT CLASS BASED ON PARALLEL GEOMETRY AND INPUT PARAMETERS
-GaugeFieldReader::GaugeFieldReader(InputParser* input){
-    m_size = input->subLatticeSize;
-    addObservable(new Plaquette());
-    m_outDir = input->outDir;
-    m_inputConfList = input->inputConfList;
+void GaugeFieldReader::execute(){
+    LatticeIO::OutputTerm::writeObs(1,m_obs);
 }
-
 
 // CREATE THE LATTICE AND INITIALIZE OBJECTS
 void GaugeFieldReader::initGFR(){

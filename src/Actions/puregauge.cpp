@@ -2,9 +2,15 @@
 #include <cmath>
 #include "Actions/puregauge.h"
 #include "Math/latticemath.h"
+#include "Utils/latticeunits.h"
 
 // COMPUTE THE ACTION DIFFERENCE ON SINGLE LINK AFTER UPDATE, TO BE USED IN
 // METROPOLIS ALGORITHM
+PureGauge::PureGauge(double beta){
+    m_beta = beta;
+    LatticeUnits::initialize(m_beta);
+}
+
 double PureGauge::compute(int x, int y, int z, int t, int mu, SU3& newLink){
     return -m_beta / 3.0 * getMultSumTrace(newLink - (*m_lat)(x,y,z,t)[mu], m_constPart);
 
@@ -17,12 +23,12 @@ void PureGauge::computeStaples(int x, int y, int z, int t, int mu){
     for(int nu = 0; nu < 4; nu++){
         if(nu != mu){
             m_constPart += (   m_lat->shift(x,y,z,t,nu,mu,1) )
-                      * ~(   m_lat->shift(x,y,z,t,mu,nu,1))
-                      * ~( (*m_lat)(x,y,z,t)[nu]);
+                        * ~(   m_lat->shift(x,y,z,t,mu,nu,1))
+                        * ~( (*m_lat)(x,y,z,t)[nu]);
 
             m_constPart += ~( m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1) )
-                      *  ~( m_lat->shift  (x,y,z,t,mu,nu,-1))
-                      *   ( m_lat->shift  (x,y,z,t,nu,nu,-1));
+                        *  ~( m_lat->shift  (x,y,z,t,mu,nu,-1))
+                        *   ( m_lat->shift  (x,y,z,t,nu,nu,-1));
         }
     }
 }

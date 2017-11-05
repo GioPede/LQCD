@@ -1,6 +1,6 @@
 # Specify the minimum version for CMake
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 # Project's name
 project(LatticeQCD)
@@ -12,50 +12,23 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 
+# Compiler options
 set(QMC_MPI 1)
 set(CMAKE_CXX_COMPILER mpic++)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 
 # The following folder will be included
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/user_extensions/include)
 
-# Add all src
-set(SHARED_SRC ${PROJECT_SOURCE_DIR}/ParallelTools/parallel.cpp
-               ${PROJECT_SOURCE_DIR}/Math/su3.cpp 
-               ${PROJECT_SOURCE_DIR}/Math/point.cpp 
-               ${PROJECT_SOURCE_DIR}/Math/random.cpp 
-               ${PROJECT_SOURCE_DIR}/Math/lattice.cpp 
-               ${PROJECT_SOURCE_DIR}/Math/complex.cpp 
-               ${PROJECT_SOURCE_DIR}/Actions/action.cpp
-               ${PROJECT_SOURCE_DIR}/Actions/puregauge.cpp
-               ${PROJECT_SOURCE_DIR}/Observables/observable.cpp
-               ${PROJECT_SOURCE_DIR}/Observables/plaquette.cpp
-               ${PROJECT_SOURCE_DIR}/Observables/energydensity.cpp
-               ${PROJECT_SOURCE_DIR}/Observables/topologicalcharge.cpp
-               ${PROJECT_SOURCE_DIR}/InputOutput/inputparser.cpp
-               ${PROJECT_SOURCE_DIR}/InputOutput/inputconf.cpp
-               ${PROJECT_SOURCE_DIR}/InputOutput/outputconf.cpp
-               ${PROJECT_SOURCE_DIR}/InputOutput/outputobs.cpp
-               ${PROJECT_SOURCE_DIR}/InputOutput/outputterm.cpp
-               ${PROJECT_SOURCE_DIR}/Apps/gaugefieldfactory.cpp
-               ${PROJECT_SOURCE_DIR}/Apps/gaugefieldreader.cpp
-               ${PROJECT_SOURCE_DIR}/Apps/wilsonflow.cpp
-               ${PROJECT_SOURCE_DIR}/Utils/latticeunits.cpp
-)
+# Core library
+add_executable(LatticeQCD "src/CMakeLists.txt")
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
-add_library( sharedResources ${SHARED_SRC} )
+# User extensions
+add_library(LatticeQCDUserExtensions "user_extensions/CMakeLists.txt")
+add_subdirectory(${CMAKE_SOURCE_DIR}/user_extensions)
 
-# Set executables
-add_executable(pgfg ${PROJECT_SOURCE_DIR}/MainPrograms/pgfg.cpp)
-add_executable(gfr  ${PROJECT_SOURCE_DIR}/MainPrograms/gfr.cpp)
-add_executable(flow ${PROJECT_SOURCE_DIR}/MainPrograms/flow.cpp)
-#add_executable(gfe ${PROJECT_SOURCE_DIR}/MainPrograms/gfe.cpp)
-
-target_link_libraries( pgfg sharedResources )
-target_link_libraries( gfr  sharedResources )
-target_link_libraries( flow sharedResources )
-#target_link_libraries( gfe sharedResources )
-
-# Set compiler and flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
-
+# Link core and user-extensions
+target_link_libraries(LatticeQCD LatticeQCDUserExtensions "-lboost_filesystem -lboost_system")
 

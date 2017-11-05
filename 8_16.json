@@ -1,0 +1,34 @@
+{
+    "LatticeSize" : {
+        "x" : 8,
+        "y" : 8,
+        "z" : 8,
+        "t" : 8
+    },
+    "SubLatticeSize" : {
+        "x" : 4,
+        "y" : 4,
+        "z" : 4,
+        "t" : 4
+    },
+    "App" : {
+        "type"   : "FLOW",
+        "params" : {
+            "tauFinal" : 1.0,
+            "epsilon"  : 0.1
+        }
+    },
+    "Action" : {
+        "type"   : "puregauge",
+        "params" : {
+            "beta" : 6.0
+        }
+    },
+    "Observables" : [
+        "myplaquette",
+        "topologicalcharge",
+        "energydensity"
+    ],
+    "InputDir" : "conf/8_16", 
+    "OutputDir" : "conf/8_16"
+}

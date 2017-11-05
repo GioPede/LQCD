@@ -1,6 +1,7 @@
 #include "Observables/plaquette.h"
 #include "Observables/observable.h"
 #include "Math/su3.h"
+#include "ParallelTools/parallel.h"
 #include "Math/lattice.h"
 #include <cstdio>
 #include <cmath>
@@ -21,7 +22,7 @@ const char* Plaquette::getName(){
 void Plaquette::initObservable(Lattice* lattice){
     m_lat = lattice;
     m_size = m_lat->getSize();
-    m_norm = 1.0 / 18.0 / m_size[0] / m_size[1] / m_size[2] / m_size[3];
+    m_norm = 1.0 / 18.0 / m_size[0] / m_size[1] / m_size[2] / m_size[3] / Parallel::numProcs();
 }
 
 // COMPUTE THE VALUE OF THE PLAQUETTE ON THE WHOLE LATTICE
@@ -43,4 +44,5 @@ void Plaquette::compute(){
         }
     }
     m_value *= m_norm;
+    gatherResults();
 }

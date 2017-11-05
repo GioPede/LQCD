@@ -5,6 +5,7 @@
 #include <mpi.h>
 #endif
 #include <cstdio>
+#include <boost/filesystem.hpp>
 #include "InputOutput/outputconf.h"
 #include "Math/lattice.h"
 #include "ParallelTools/parallel.h"
@@ -12,11 +13,17 @@
 namespace LatticeIO {
 
     int OutputConf::m_linkSize = 72 * sizeof(double);
+    std::string OutputConf::m_outputDir;
+
+    void OutputConf::setOutputDir(std::string outputDir){
+        m_outputDir = outputDir;
+        boost::filesystem::create_directory(m_outputDir);
+    }
 
     // Write a single file for every sublattice (for testing)
     void OutputConf::writeSubLattice(Lattice& lattice, int confNum){
         char fileName [1024];
-        sprintf(fileName, "%s/r%03du%03d", OUT_PREFIX, Parallel::rank(), confNum);
+        sprintf(fileName, "%s/r%03du%03d", m_outputDir.c_str(), Parallel::rank(), confNum);
         FILE* output = fopen(fileName, "wb");
         for(int t = 0; t < Parallel::latticeSubSize()[3]; t++){
         for(int z = 0; z < Parallel::latticeSubSize()[2]; z++){
@@ -38,7 +45,7 @@ namespace LatticeIO {
 
         // Create filename and open
         char fileName [1024];
-        sprintf(fileName, "%s/conf%04d.bin", OUT_PREFIX, confNum);
+        sprintf(fileName, "%s/conf%04d.bin", m_outputDir.c_str(), confNum);
         Parallel::openFile(output, fileName);
 
         for(int t = 0; t < Parallel::latticeSubSize()[3]; t++){

@@ -71,6 +71,7 @@ void EnergyDensity::compute(){
         }}
     }}}}
     m_value *= m_norm;
+    gatherResults();
 }
 
 

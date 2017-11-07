@@ -13,10 +13,6 @@ Plaquette::Plaquette() : Observable(){
     m_name = "Plaquette";
 }
 
-// NAME
-const char* Plaquette::getName(){
-    return m_name.c_str();
-}
 
 // INITIALIZER
 void Plaquette::initObservable(Lattice* lattice){

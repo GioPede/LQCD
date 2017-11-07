@@ -36,16 +36,23 @@ namespace LatticeIO {
     void OutputTerm::writeObs(int confNum, std::vector<Observable*>& obsList){
         if(Parallel::rank() == 0){
             printf("Configuration Number %4i\n", confNum);
-            for(auto& obs : obsList)
-                printf("\t%s\t = %lf \n", obs->getName(), obs->value());
+            //or(auto& obs : obsList)
+            //    printf("\t%s\t = %lf \n", obs->getName(), obs->value());
+            printf("\t%s\t = %g \n", "Plaq.", obsList[0]->plaq);
+            printf("\t%s\t = %g \n", "Topc.", obsList[0]->topc);
+            printf("\t%s\t = %g \n", "Energ.", obsList[0]->energy);
             }
+
     }
 
     void OutputTerm::writeFlowObs(double flowTime, std::vector<Observable*>& obsList){
         if(Parallel::rank() == 0){
             printf("Flow Time %2.2lf\n", flowTime);
-            for(auto& obs : obsList)
-                printf("\t%s\t = %lf \n", obs->getName(), obs->value());
+            //for(auto& obs : obsList)
+            //    printf("\t%s\t = %lf \n", obs->getName(), obs->value());
+            printf("\t%s\t = %g \n", "Plaq.", obsList[0]->plaq);
+            printf("\t%s\t = %g \n", "Topc.", obsList[0]->topc);
+            printf("\t%s\t = %g \n", "Energ.", obsList[0]->energy);
         }
     }
 

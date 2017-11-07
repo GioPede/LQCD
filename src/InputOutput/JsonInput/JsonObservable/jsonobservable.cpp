@@ -48,6 +48,9 @@ namespace LatticeIO {
             else if(obs == "topologicalcharge"){
                 return true;
             }
+            else if(obs == "superobs"){
+                return true;
+            }
             return false;
         }
 
@@ -67,6 +70,9 @@ namespace LatticeIO {
             }
             else if(obs == "topologicalcharge"){
                 app->addObservable(new TopologicalCharge());
+            }
+            else if(obs == "superobs"){
+                app->addObservable(new SuperObs());
             }
         }
 

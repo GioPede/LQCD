@@ -67,17 +67,22 @@ void WilsonFlow::applyWilsonFlow(int confNum, double epsilon){
     std::vector<std::vector<double>> flowObsMatrix;
     flowObsMatrix.resize(int(m_tauFinal/epsilon));
     for(auto& slice : flowObsMatrix)
-        slice.resize(m_obs.size()+1);
+        slice.resize(4);
     flowObsMatrix[0][0] = 0.0;
-    for(int i = 0; i < m_obs.size(); i++)
-        flowObsMatrix[0][i+1] = m_obs[i]->value();
-
+    //for(int i = 0; i < m_obs.size(); i++)
+    //    flowObsMatrix[0][i+1] = m_obs[i]->value();
+    flowObsMatrix[0][1] =  m_obs[0]->plaq;
+    flowObsMatrix[0][2] = m_obs[0]->topc;
+    flowObsMatrix[0][3] = m_obs[0]->energy;
     for(int t = 1; t < flowObsMatrix.size(); t++){
         flowStep(epsilon);
         flowObsMatrix[t][0] = flowObsMatrix[t-1][0] + epsilon;
         computeObservables();
-        for(int i = 0; i < m_obs.size(); i++)
-            flowObsMatrix[t][i+1] = m_obs[i]->value();
+        //for(int i = 0; i < m_obs.size(); i++)
+        //    flowObsMatrix[t][i+1] = m_obs[i]->value();
+        flowObsMatrix[t][1] =  m_obs[0]->plaq;
+        flowObsMatrix[t][2] = m_obs[0]->topc;
+        flowObsMatrix[t][3] = m_obs[0]->energy;
         LatticeIO::OutputTerm::writeFlowObs(flowObsMatrix[t][0], m_obs);
     }
     LatticeIO::OutputObs::writeFlowObs(confNum, m_obs, flowObsMatrix);

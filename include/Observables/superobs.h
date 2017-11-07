@@ -4,9 +4,9 @@
 #include "observable.h"
 #include "Math/latticemath.h"
 
-class EnergyDensity : public Observable {
+class SuperObs : public Observable {
 public:
-    EnergyDensity();
+    SuperObs();
     void initObservable(Lattice *lattice);
     void compute();
 
@@ -14,5 +14,13 @@ private:
     std::array<int, 4> m_size;
     // auxiliary variables
     double m_norm;
-    SU3 Gmn;
+
+    std::array<std::array<SU3,4>,4> clovers;
+    SU3 plaqSum;
+
+    std::array<int,24> mu;
+    std::array<int,24> nu;
+    std::array<int,24> rho;
+    std::array<int,24> sig;
+    void superGatherResults();
 };

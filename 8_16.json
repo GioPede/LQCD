@@ -25,9 +25,7 @@
         }
     },
     "Observables" : [
-        "myplaquette",
-        "topologicalcharge",
-        "energydensity"
+        "superobs"
     ],
     "InputDir" : "conf/8_16", 
     "OutputDir" : "conf/8_16"

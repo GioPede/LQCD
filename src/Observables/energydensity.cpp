@@ -11,11 +11,6 @@ EnergyDensity::EnergyDensity() : Observable(){
     m_name = "Energy Dens.";
 }
 
-// NAME
-const char* EnergyDensity::getName(){
-    return m_name.c_str();
-}
-
 // INITIALIZER
 void EnergyDensity::initObservable(Lattice* lattice){
     m_lat = lattice;

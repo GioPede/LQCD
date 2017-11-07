@@ -15,10 +15,6 @@ TopologicalCharge::TopologicalCharge() : Observable(){
     m_name = "Top. Charge";
 }
 
-// NAME
-const char* TopologicalCharge::getName(){
-    return m_name.c_str();
-}
 
 // INITIALIZER
 void TopologicalCharge::initObservable(Lattice* lattice){

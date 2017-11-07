@@ -46,8 +46,11 @@ namespace LatticeIO {
             sprintf(flowFileName, "%s/flow/conf%04d.dat", m_outputDir.c_str(), confNum);
             FILE* flowOut = fopen(flowFileName, "w+");
             fprintf(flowOut, "Flow Time\t");
-            for(auto& obs : obsList)
-                fprintf(flowOut, "%s\t", obs->getName());
+            //for(auto& obs : obsList)
+            //    fprintf(flowOut, "%s\t", obs->getName());
+            printf("%s\t", "Plaq.");
+            printf("%s\t", "Topc.");
+            printf("%s\t", "Energ.");
             fprintf(flowOut, "\n");
 
             for(auto& flowStep : obsMatrix){

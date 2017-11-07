@@ -15,3 +15,8 @@ void Observable::gatherResults(){
 double Observable::value(){
     return m_value;
 }
+
+
+const char* Observable::getName(){
+    return m_name.c_str();
+}

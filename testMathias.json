@@ -25,9 +25,7 @@
         }
     },
     "Observables" : [
-        "plaquette",
-        "topologicalcharge",
-        "energydensity"
+        "superobs"
     ],
     "InputDir" : "conf/testMathias", 
     "OutputDir" : "conf/testMathias"

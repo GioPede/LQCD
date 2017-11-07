@@ -12,6 +12,7 @@ public:
     void   computeStaples(int x, int y, int z, int t, int mu);
     SU3    computeDerivative(int x, int y, int z, int t, int mu);
 
+    void computeOtherStaples(int x, int y, int z, int t, int mu);
 private:
     double m_beta;
 

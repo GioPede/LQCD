@@ -1,6 +1,7 @@
 #include "Observables/topologicalcharge.h"
 #include "Observables/observable.h"
 #include "Math/su3.h"
+#include "ParallelTools/parallel.h"
 #include "Math/lattice.h"
 #include <cstdio>
 #include <cmath>
@@ -39,34 +40,26 @@ void TopologicalCharge::compute(){
         for(int nu = 0; nu < 4; nu++){
         if(nu!=mu){
             // compute G_mu_nu
-            Gmn.setSU3Zero();
-            A.setSU3Identity();
-            A *= (*m_lat)(x,y,z,t)[mu];
-            A *= m_lat->shift(x,y,z,t,nu, mu, 1);
-            A *= ~(m_lat->shift(x,y,z,t,mu, nu, 1));
-            A *= ~(*m_lat)(x,y,z,t)[nu];
-            Gmn+=A;
+            Gmn  =  (*m_lat)(x,y,z,t)[mu]
+                 *    m_lat->shift(x,y,z,t,nu, mu, 1)
+                 *  ~(m_lat->shift(x,y,z,t,mu, nu, 1))
+                 * ~(*m_lat)(x,y,z,t)[nu];
 
-            A.setSU3Identity();
-            A *= (*m_lat)(x,y,z,t)[nu];
-            A *= m_lat->shift2 (x,y,z,t,mu,nu,1,mu,-1);
-            A *= ~(m_lat->shift(x,y,z,t,nu, mu, -1));
-            A *= (m_lat->shift(x,y,z,t,mu, mu, -1));
-            Gmn+=A;
+            Gmn +=  (*m_lat)(x,y,z,t)[nu]
+                 *  ~(m_lat->shift2 (x,y,z,t,mu,nu,1,mu,-1))
+                 *  ~(m_lat->shift(x,y,z,t,nu, mu, -1))
+                 *   (m_lat->shift(x,y,z,t,mu, mu, -1));
 
-            A.setSU3Identity();
-            A *= ~(m_lat->shift(x,y,z,t,mu, mu, -1));
-            A *= ~(m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,-1));
-            A *= (m_lat->shift2 (x,y,z,t,mu,nu,-1,mu,-1));
-            A *= (m_lat->shift(x,y,z,t,nu, nu, -1));
-            Gmn+=A;
+            Gmn +=  ~(m_lat->shift(x,y,z,t,mu, mu, -1))
+                 *  ~(m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,-1))
+                 *   (m_lat->shift2 (x,y,z,t,mu,nu,-1,mu,-1))
+                 *   (m_lat->shift(x,y,z,t,nu, nu, -1));
 
-            A.setSU3Identity();
-            A *= ~(m_lat->shift(x,y,z,t,nu, nu, -1));
-            A *= (m_lat->shift(x,y,z,t,mu, nu, -1));
-            A *= (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1));
-            A *= ~(*m_lat)(x,y,z,t)[mu];
-            Gmn+=A;
+            Gmn +=  ~(m_lat->shift(x,y,z,t,nu, nu, -1))
+                 *   (m_lat->shift(x,y,z,t,mu, nu, -1))
+                 *   (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1))
+                 * ~(*m_lat)(x,y,z,t)[mu];
+
             Gmn*=0.25;
             for(int i = 0; i < 18; i+=2)
                 Gmn.mat[i] = 0;
@@ -76,46 +69,41 @@ void TopologicalCharge::compute(){
             for(int sig = 0; sig < 4; sig++){
             if(sig!=mu && sig!=nu && sig!=rho){
                 // compute G_rho_sig
-                Grs.setSU3Zero();
-                A.setSU3Identity();
-                A *= (*m_lat)(x,y,z,t)[rho];
-                A *= m_lat->shift(x,y,z,t,sig, rho, 1);
-                A *= ~(m_lat->shift(x,y,z,t,rho, sig, 1));
-                A *= ~(*m_lat)(x,y,z,t)[sig];
-                Grs+=A;
+                Grs  =  (*m_lat)(x,y,z,t)[rho]
+                     *    m_lat->shift(x,y,z,t,sig, rho, 1)
+                     *  ~(m_lat->shift(x,y,z,t,rho, sig, 1))
+                     * ~(*m_lat)(x,y,z,t)[sig];
 
-                A.setSU3Identity();
-                A *= (*m_lat)(x,y,z,t)[sig];
-                A *= m_lat->shift2 (x,y,z,t,rho,sig,1,rho,-1);
-                A *= ~(m_lat->shift(x,y,z,t,sig, rho, -1));
-                A *= (m_lat->shift(x,y,z,t,rho, rho, -1));
-                Grs+=A;
+                Grs +=  (*m_lat)(x,y,z,t)[sig]
+                     *  ~(m_lat->shift2 (x,y,z,t,rho,sig,1,rho,-1))
+                     *  ~(m_lat->shift(x,y,z,t,sig, rho, -1))
+                     *   (m_lat->shift(x,y,z,t,rho, rho, -1));
 
-                A.setSU3Identity();
-                A *= ~(m_lat->shift(x,y,z,t,rho, rho, -1));
-                A *= ~(m_lat->shift2 (x,y,z,t,sig,sig,-1,rho,-1));
-                A *= (m_lat->shift2 (x,y,z,t,rho,sig,-1,rho,-1));
-                A *= (m_lat->shift(x,y,z,t,sig, sig, -1));
-                Grs+=A;
+                Grs +=  ~(m_lat->shift(x,y,z,t,rho, rho, -1))
+                     *  ~(m_lat->shift2 (x,y,z,t,sig,sig,-1,rho,-1))
+                     *   (m_lat->shift2 (x,y,z,t,rho,sig,-1,rho,-1))
+                     *   (m_lat->shift(x,y,z,t,sig, sig, -1));
 
-                A.setSU3Identity();
-                A *= ~(m_lat->shift(x,y,z,t,sig, sig, -1));
-                A *= (m_lat->shift(x,y,z,t,rho, sig, -1));
-                A *= (m_lat->shift2 (x,y,z,t,sig,sig,-1,rho,1));
-                A *= ~(*m_lat)(x,y,z,t)[rho];
-                Grs+=A;
+                Grs +=  ~(m_lat->shift(x,y,z,t,sig, sig, -1))
+                     *   (m_lat->shift(x,y,z,t,rho, sig, -1))
+                     *   (m_lat->shift2 (x,y,z,t,sig,sig,-1,rho,1))
+                     * ~(*m_lat)(x,y,z,t)[rho];
+
                 Grs*=0.25;
                 for(int i = 0; i < 18; i+=2)
                     Grs.mat[i] = 0;
                 // multiply and sum
                 m_value += (Gmn*Grs).realTrace()*leviCivita(mu, nu, rho, sig);
+
+
             }}}}
         }}}
     }}}}
-    m_value = m_value*m_value*m_norm; //* 0.0625* 0.0625* 0.0625* 0.0625;
 
-   // m_value = 0.197 / 0.0625*pow(0.197*1.5, 0.25) * pow(m_value*m_value, 0.25);
     gatherResults();
+
+    //m_value = m_value / (32 * M_PI * M_PI);
+    //m_value = 0.1973 / 0.0931 / 8 * pow(m_value*m_value, 0.25);
 }
 
 

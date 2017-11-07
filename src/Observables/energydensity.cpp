@@ -20,7 +20,6 @@ const char* EnergyDensity::getName(){
 void EnergyDensity::initObservable(Lattice* lattice){
     m_lat = lattice;
     m_size = m_lat->getSize();
-    m_norm = 1.0 / m_size[0] / m_size[1] / m_size[2] / m_size[3] / 4.0 / 18.0;
 }
 
 // COMPUTE THE VALUE OF THE PLAQUETTE ON THE WHOLE LATTICE
@@ -35,42 +34,33 @@ void EnergyDensity::compute(){
         for(int mu = 0; mu < 4; mu++){
         for(int nu = mu+1; nu < 4; nu++){
             // compute G_mu_nu
-            Gmn.setSU3Zero();
-            A.setSU3Identity();
-            A *= (*m_lat)(x,y,z,t)[mu];
-            A *= m_lat->shift(x,y,z,t,nu, mu, 1);
-            A *= ~(m_lat->shift(x,y,z,t,mu, nu, 1));
-            A *= ~(*m_lat)(x,y,z,t)[nu];
-            Gmn+=A;
+            Gmn  =  (*m_lat)(x,y,z,t)[mu]
+                 *    m_lat->shift(x,y,z,t,nu, mu, 1)
+                 *  ~(m_lat->shift(x,y,z,t,mu, nu, 1))
+                 * ~(*m_lat)(x,y,z,t)[nu];
 
-            A.setSU3Identity();
-            A *= (*m_lat)(x,y,z,t)[nu];
-            A *= m_lat->shift2 (x,y,z,t,mu,nu,1,mu,-1);
-            A *= ~(m_lat->shift(x,y,z,t,nu, mu, -1));
-            A *= (m_lat->shift(x,y,z,t,mu, mu, -1));
-            Gmn+=A;
+            Gmn +=  (*m_lat)(x,y,z,t)[nu]
+                 *  ~(m_lat->shift2 (x,y,z,t,mu,nu,1,mu,-1))
+                 *  ~(m_lat->shift(x,y,z,t,nu, mu, -1))
+                 *   (m_lat->shift(x,y,z,t,mu, mu, -1));
 
-            A.setSU3Identity();
-            A *= ~(m_lat->shift(x,y,z,t,mu, mu, -1));
-            A *= ~(m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,-1));
-            A *= (m_lat->shift2 (x,y,z,t,mu,nu,-1,mu,-1));
-            A *= (m_lat->shift(x,y,z,t,nu, nu, -1));
-            Gmn+=A;
+            Gmn +=  ~(m_lat->shift(x,y,z,t,mu, mu, -1))
+                 *  ~(m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,-1))
+                 *   (m_lat->shift2 (x,y,z,t,mu,nu,-1,mu,-1))
+                 *   (m_lat->shift(x,y,z,t,nu, nu, -1));
 
-            A.setSU3Identity();
-            A *= ~(m_lat->shift(x,y,z,t,nu, nu, -1));
-            A *= (m_lat->shift(x,y,z,t,mu, nu, -1));
-            A *= (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1));
-            A *= ~(*m_lat)(x,y,z,t)[mu];
-            Gmn+=A;
+            Gmn +=  ~(m_lat->shift(x,y,z,t,nu, nu, -1))
+                 *   (m_lat->shift(x,y,z,t,mu, nu, -1))
+                 *   (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1))
+                 * ~(*m_lat)(x,y,z,t)[mu];
+
             Gmn*=0.25;
             for(int i = 0; i < 18; i+=2)
                 Gmn.mat[i] = 0;
-            A.setSU3Identity();
-            m_value += (A - (Gmn*Gmn)).realTrace();
+            m_value += (Gmn*Gmn).realTrace();
         }}
     }}}}
-    m_value *= m_norm;
+
     gatherResults();
 }
 

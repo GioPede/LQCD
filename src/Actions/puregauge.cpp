@@ -35,8 +35,8 @@ void PureGauge::computeStaples(int x, int y, int z, int t, int mu){
 
 SU3 PureGauge::computeDerivative(int x, int y, int z, int t, int mu){
     computeStaples(x, y, z, t, mu);
-    m_omega = m_constPart*(*m_lat)(x,y,z,t)[mu];
-    m_omega = (m_omega-~m_omega);
+    m_omega = (*m_lat)(x,y,z,t)[mu]*m_constPart;
+    m_omega = (~m_omega-m_omega);
     double tr = m_omega.imagTrace()/6.0;
     m_omega *= 0.5;
     for(int i = 1; i < 18; i+=2)
@@ -44,8 +44,8 @@ SU3 PureGauge::computeDerivative(int x, int y, int z, int t, int mu){
 
     for(int i = 0; i < 18; i+=2){
         double temp = m_omega.mat[i];
-        m_omega.mat[i] = -m_omega.mat[i+1] * 0.5;
-        m_omega.mat[i+1] = temp * 0.5;
+        m_omega.mat[i] = m_omega.mat[i+1] * 0.5;
+        m_omega.mat[i+1] = -temp * 0.5;
     }
     return std::move(m_omega);
 }

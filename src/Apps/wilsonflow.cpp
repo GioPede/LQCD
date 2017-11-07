@@ -51,7 +51,7 @@ void WilsonFlow::createLattice(std::array<int,4> latticeSize){
 void WilsonFlow::flowConfigurations(){
     // check that current processor should be active
     int confNum = 0;
-    double epsilon = 0.02;
+    double epsilon = m_epsilon;
     if(Parallel::isActive()){
         for(auto& conf : m_inputConfList){
             LatticeIO::InputConf::readConf(*m_lat, conf.c_str());
@@ -65,19 +65,19 @@ void WilsonFlow::flowConfigurations(){
 
 void WilsonFlow::applyWilsonFlow(int confNum, double epsilon){
     std::vector<std::vector<double>> flowObsMatrix;
-    flowObsMatrix.resize(int(0.2/epsilon));
+    flowObsMatrix.resize(int(m_tauFinal/epsilon));
     for(auto& slice : flowObsMatrix)
         slice.resize(m_obs.size()+1);
     flowObsMatrix[0][0] = 0.0;
     for(int i = 0; i < m_obs.size(); i++)
-        flowObsMatrix[0][i+1] = m_obsValues[i];
+        flowObsMatrix[0][i+1] = m_obs[i]->value();
 
     for(int t = 1; t < flowObsMatrix.size(); t++){
         flowStep(epsilon);
         flowObsMatrix[t][0] = flowObsMatrix[t-1][0] + epsilon;
         computeObservables();
         for(int i = 0; i < m_obs.size(); i++)
-            flowObsMatrix[t][i+1] = m_obsValues[i];
+            flowObsMatrix[t][i+1] = m_obs[i]->value();
         LatticeIO::OutputTerm::writeFlowObs(flowObsMatrix[t][0], m_obs);
     }
     LatticeIO::OutputObs::writeFlowObs(confNum, m_obs, flowObsMatrix);
@@ -100,7 +100,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z)(x,y,z,t)[mu] * epsilon * (1.0/4.0));
+            (*m_lat)(x,y,z,t)[mu] = exp((*m_Z)(x,y,z,t)[mu] * epsilon * (1.0/4.0))* (*m_lat)(x,y,z,t)[mu];
         }
     }}}}
 
@@ -121,7 +121,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z)(x,y,z,t)[mu]*epsilon);
+            (*m_lat)(x,y,z,t)[mu] = exp((*m_Z)(x,y,z,t)[mu]*epsilon)* (*m_lat)(x,y,z,t)[mu];
         }
     }}}}
 
@@ -142,7 +142,7 @@ void WilsonFlow::flowStep(double epsilon){
     for(int z = 0; z < m_size[2]; z++){
     for(int t = 0; t < m_size[3]; t++){
         for(int mu = 0; mu < 4; mu++){
-            (*m_lat)(x,y,z,t)[mu] *= exp((*m_Z)(x,y,z,t)[mu] *epsilon);
+            (*m_lat)(x,y,z,t)[mu] = exp((*m_Z)(x,y,z,t)[mu] *epsilon)* (*m_lat)(x,y,z,t)[mu];
         }
     }}}}
 }
@@ -150,13 +150,8 @@ void WilsonFlow::flowStep(double epsilon){
 
 
 void WilsonFlow::computeObservables(){
-    for(int i = 0; i < m_obs.size(); i++){
-        m_obs[i]->compute();
-        double value = m_obs[i]->value();
-        MPI_Allreduce(&value, &m_obsValues[i], 1, MPI_DOUBLE, MPI_SUM, Parallel::cartCoordComm());
-    }
-    m_obsValues[0] /= Parallel::activeProcs();
-    m_obsValues[1] /= LatticeUnits::latticeSites;
+    for(auto& obs : m_obs)
+        obs->compute();
 }
 
 // GETTERS AND SETTERS

@@ -1,34 +1,34 @@
 {
     "LatticeSize" : {
+        "x" : 16,
+        "y" : 16,
+        "z" : 16,
+        "t" : 16
+    },
+    "SubLatticeSize" : {
         "x" : 8,
         "y" : 8,
         "z" : 8,
         "t" : 8
     },
-    "SubLatticeSize" : {
-        "x" : 4,
-        "y" : 4,
-        "z" : 4,
-        "t" : 4
-    },
     "App" : {
         "type"   : "FLOW",
         "params" : {
-            "tauFinal" : 10.0,
-            "epsilon"  : 0.02
+            "tauFinal" : 2.0,
+            "epsilon"  : 0.01
         }
     },
     "Action" : {
         "type"   : "puregauge",
         "params" : {
-            "beta" : 6.4
+            "beta" : 6.0
         }
     },
     "Observables" : [
-        "myplaquette",
+        "plaquette",
         "topologicalcharge",
         "energydensity"
     ],
-    "InputDir" : "conf/8_16", 
-    "OutputDir" : "conf/8_16"
+    "InputDir" : "conf/testMathias", 
+    "OutputDir" : "conf/testMathias"
 }

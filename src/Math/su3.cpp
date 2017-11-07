@@ -51,7 +51,7 @@ void SU3::printSU3(){
     int idx = 0;
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
-            printf("( %7.3f, %7.3f )\t", mat[idx], mat[idx+1]);
+            printf("( %10.9f, %10.9f )\t", mat[idx], mat[idx+1]);
             idx += 2;
         }
         printf("\n");
@@ -158,7 +158,7 @@ SU3 exp(const SU3& Q){
 
 SU3 exp(SU3&& Q){
     Q2 = Q*Q;
-    Q3 = Q*Q*Q;
+    Q3 = Q*Q2;
 
     double c0 = Q3.realTrace() / 3.0;
     double c1 = Q2.realTrace() / 2.0;
@@ -178,10 +178,10 @@ SU3 exp(SU3&& Q){
 
     if(fabs(w) < 0.05){
         xi = 1.0 - w2/6.0 * (1 - w2/20.0 * (1 - w2/42.0));
+
     }
     else
         xi = sin(w)/w;
-
     double c2u = cos(2*u);
     double s2u = sin(2*u);
     double cmu = cos(-u);
@@ -205,6 +205,8 @@ SU3 exp(SU3&& Q){
         h2.imag = -h2.imag;
     }
     double norm = 1.0/(9.0*u2-w2);
+
+
 
     for(int i = 0; i < 18; i+=8){
         F0.mat[i] = h0.real*norm;

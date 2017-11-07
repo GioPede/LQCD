@@ -29,7 +29,5 @@ int main(int argn, char* argv[]) {
     if(Parallel::rank() == 0)
         printf("Total time taken: %.2fs\n", elapsedTime.count());
 
-    // End
-    //delete input;
     return 0;
 }

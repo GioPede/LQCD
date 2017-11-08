@@ -64,14 +64,22 @@ void SuperObs::compute(){
                              *   (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1))
                              * ~(*m_lat)(x,y,z,t)[mu];
 
+            // ????????
+
+            clovers[mu][nu] = clovers[mu][nu] - (~clovers[mu][nu]);
+            double tr = clovers[mu][nu].imagTrace()/3.0;
+            for(int i = 1; i < 18; i+=8)
+                clovers[mu][nu].mat[i] -= tr;
+
+
             clovers[mu][nu]*=0.25;
-            for(int i = 0; i < 18; i+=2)
-                clovers[mu][nu].mat[i] = 0;
+            //for(int i = 0; i < 18; i+=2)
+            //    clovers[mu][nu].mat[i] = 0;
             clovers[nu][mu] = ~(clovers[mu][nu]);
             energy += (clovers[mu][nu]*clovers[mu][nu]).realTrace() + (clovers[nu][mu]*clovers[nu][mu]).realTrace();
         }}
         for(int mu = 0; mu < 4; mu++){
-        for(int nu = 0; nu < 4; nu++){
+        for(int nu = mu+1; nu < 4; nu++){
             if(nu!=mu){
                 for(int rho = 0; rho < 4; rho++){
                 if(rho!=mu && rho!=nu){

@@ -13,6 +13,23 @@
 
 namespace LatticeIO {
 
+
+    float ReverseFloat( const float inFloat )
+    {
+       float retVal;
+       char *floatToConvert = ( char* ) & inFloat;
+       char *returnFloat = ( char* ) & retVal;
+
+       // swap the bytes into a temporary buffer
+       returnFloat[0] = floatToConvert[3];
+       returnFloat[1] = floatToConvert[2];
+       returnFloat[2] = floatToConvert[1];
+       returnFloat[3] = floatToConvert[0];
+
+       return retVal;
+    }
+
+
     int InputConf::m_linkSize = 72 * sizeof(double);
     std::string InputConf::m_inputDir;
 
@@ -70,6 +87,19 @@ namespace LatticeIO {
                 startPointY = startPointZ + volumeY * ( Parallel::rankCoord()[1]*Parallel::latticeSubSize()[1] + y);
                     for(int x = 0; x < Parallel::latticeSubSize()[0]; x++){
                         startPointX = startPointY + volumeX * ( Parallel::rankCoord()[0]*Parallel::latticeSubSize()[0] + x);
+
+//                        // FOR CHROMA
+//                        startPointX *= 72 * sizeof(float);
+//                        for(int mu = 0; mu < 4; mu++){
+//                            for(int i = 0; i < 18; i++){
+//                                float a;
+//                                MPI_File_read_at(input, startPointX, &a, 1, MPI_FLOAT, MPI_STATUS_IGNORE);
+//                                lattice(x,y,z,t).m_links[mu].mat[i] = ReverseFloat(a);
+//                                startPointX += sizeof(float);
+//                            }
+//                        }
+
+                        // FOR REASONABLE ENDIAN
                         startPointX *= m_linkSize;
                         MPI_File_read_at(input, startPointX, lattice(x,y,z,t).m_links, 72, MPI_DOUBLE, MPI_STATUS_IGNORE);
                     }

@@ -54,12 +54,12 @@ void SuperObs::compute(){
                              *  ~(m_lat->shift(x,y,z,t,nu, mu, -1))
                              *   (m_lat->shift(x,y,z,t,mu, mu, -1));
 
-            clovers[mu][nu] +=  ~(m_lat->shift(x,y,z,t,mu, mu, -1))
+            clovers[mu][nu] -=  ~(m_lat->shift(x,y,z,t,mu, mu, -1))
                              *  ~(m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,-1))
                              *   (m_lat->shift2 (x,y,z,t,mu,nu,-1,mu,-1))
                              *   (m_lat->shift(x,y,z,t,nu, nu, -1));
 
-            clovers[mu][nu] +=  ~(m_lat->shift(x,y,z,t,nu, nu, -1))
+            clovers[mu][nu] -=  ~(m_lat->shift(x,y,z,t,nu, nu, -1))
                              *   (m_lat->shift(x,y,z,t,mu, nu, -1))
                              *   (m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1))
                              * ~(*m_lat)(x,y,z,t)[mu];
@@ -88,19 +88,27 @@ void SuperObs::compute(){
             energy += (clovers[mu][nu]*clovers[mu][nu]).realTrace() + (clovers[nu][mu]*clovers[nu][mu]).realTrace();
         }}
 
-        for(int mu = 0; mu < 4; mu++){
-        for(int nu = mu+1; nu < 4; nu++){
-            if(nu!=mu){
-                for(int rho = 0; rho < 4; rho++){
-                if(rho!=mu && rho!=nu){
-                    for(int sig = rho+1; sig < 4; sig++){
-                    if(sig!=mu && sig!=nu && sig!=rho){
-                        topc += (clovers[mu][nu]*clovers[rho][sig]).realTrace()*leviCivit(mu, nu, rho, sig);
-                        //printf("%g\n", (clovers[mu][nu]*clovers[rho][sig]).realTrace());
-                    }}
-                }}
+//        for(int mu = 0; mu < 4; mu++){
+//        for(int nu = mu+1; nu < 4; nu++){
+//            if(nu!=mu){
+//                for(int rho = 0; rho < 4; rho++){
+//                if(rho!=mu && rho!=nu){
+//                    for(int sig = rho+1; sig < 4; sig++){
+//                    if(sig!=mu && sig!=nu && sig!=rho){
+//                        topc += (clovers[mu][nu]*clovers[rho][sig]).realTrace()*leviCivit(mu, nu, rho, sig);
+//                        //printf("%g\n", (clovers[mu][nu]*clovers[rho][sig]).realTrace());
+//                    }}
+//                }}
+//            }
+//        }}
+            int mu = 0;
+            for(int nu = 1; nu < 4; nu++){
+                int rho = nu%3;
+                rho++;
+                int sig = rho%3;
+                sig++;
+                topc += (clovers[mu][nu]*clovers[rho][sig]).realTrace();
             }
-        }}
 
     }}}}
     plaq = plaqSum.realTrace()/ 18.0 / m_size[0] / m_size[1] / m_size[2] / m_size[3] / Parallel::numProcs();

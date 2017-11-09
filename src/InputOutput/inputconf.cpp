@@ -106,20 +106,20 @@ namespace LatticeIO {
                     for(int x = 0; x < Parallel::latticeSubSize()[0]; x++){
                         startPointX = startPointY + volumeX * ( Parallel::rankCoord()[0]*Parallel::latticeSubSize()[0] + x);
 
-                        // FOR CHROMA
-                        startPointX *= 72 * sizeof(double);
-                        for(int mu = 0; mu < 4; mu++){
-                            for(int i = 0; i < 18; i++){
-                                double a;
-                                MPI_File_read_at(input, startPointX, &a, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-                                lattice(x,y,z,t).m_links[mu].mat[i] = ReverseDouble(a);
-                                startPointX += sizeof(double);
-                            }
-                        }
+//                        // FOR CHROMA
+//                        startPointX *= 72 * sizeof(double);
+//                        for(int mu = 0; mu < 4; mu++){
+//                            for(int i = 0; i < 18; i++){
+//                                double a;
+//                                MPI_File_read_at(input, startPointX, &a, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+//                                lattice(x,y,z,t).m_links[mu].mat[i] = ReverseDouble(a);
+//                                startPointX += sizeof(double);
+//                            }
+//                        }
 
-//                        // FOR REASONABLE ENDIAN
-//                        startPointX *= m_linkSize;
-//                        MPI_File_read_at(input, startPointX, lattice(x,y,z,t).m_links, 72, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                        // FOR REASONABLE ENDIAN
+                        startPointX *= m_linkSize;
+                        MPI_File_read_at(input, startPointX, lattice(x,y,z,t).m_links, 72, MPI_DOUBLE, MPI_STATUS_IGNORE);
                     }
                 }
             }

@@ -66,26 +66,37 @@ void SuperObs::compute(){
 
             // ????????
 
-            clovers[mu][nu] = clovers[mu][nu] - (~clovers[mu][nu]);
-            double tr = clovers[mu][nu].imagTrace()/3.0;
-            for(int i = 1; i < 18; i+=8)
-                clovers[mu][nu].mat[i] -= tr;
+//            clovers[mu][nu] = clovers[mu][nu] - (~clovers[mu][nu]);
+//            double tr = clovers[mu][nu].imagTrace()/3.0;
+//            for(int i = 1; i < 18; i+=8)
+//                clovers[mu][nu].mat[i] -= tr;
 
 
-            clovers[mu][nu]*=0.25;
+//            clovers[mu][nu]*=0.25;
             //for(int i = 0; i < 18; i+=2)
             //    clovers[mu][nu].mat[i] = 0;
+
+            clovers[mu][nu] = clovers[mu][nu] - (~clovers[mu][nu]);
+            for(int i = 0; i < 18; i+=2){
+                double temp = clovers[mu][nu].mat[i];
+                clovers[mu][nu].mat[i] = clovers[mu][nu].mat[i+1];
+                clovers[mu][nu].mat[i+1] = -temp;
+            }
+            clovers[mu][nu]*= 1./8.0;
+
             clovers[nu][mu] = ~(clovers[mu][nu]);
             energy += (clovers[mu][nu]*clovers[mu][nu]).realTrace() + (clovers[nu][mu]*clovers[nu][mu]).realTrace();
         }}
+
         for(int mu = 0; mu < 4; mu++){
         for(int nu = mu+1; nu < 4; nu++){
             if(nu!=mu){
                 for(int rho = 0; rho < 4; rho++){
                 if(rho!=mu && rho!=nu){
-                    for(int sig = 0; sig < 4; sig++){
+                    for(int sig = rho+1; sig < 4; sig++){
                     if(sig!=mu && sig!=nu && sig!=rho){
                         topc += (clovers[mu][nu]*clovers[rho][sig]).realTrace()*leviCivit(mu, nu, rho, sig);
+                        //printf("%g\n", (clovers[mu][nu]*clovers[rho][sig]).realTrace());
                     }}
                 }}
             }

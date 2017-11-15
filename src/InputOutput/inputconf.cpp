@@ -31,6 +31,24 @@ namespace LatticeIO {
        return retVal;
     }
 
+    double ReverseDouble( const double inDouble ){
+       double retVal;
+       char *doubleToConvert = ( char* ) & inDouble;
+       char *returnDouble = ( char* ) & retVal;
+
+       // swap the bytes into a temporary buffer
+       returnDouble[0] = doubleToConvert[7];
+       returnDouble[1] = doubleToConvert[6];
+       returnDouble[2] = doubleToConvert[5];
+       returnDouble[3] = doubleToConvert[4];
+       returnDouble[4] = doubleToConvert[3];
+       returnDouble[5] = doubleToConvert[2];
+       returnDouble[6] = doubleToConvert[1];
+       returnDouble[7] = doubleToConvert[0];
+       return retVal;
+
+    }
+
 
     int InputConf::m_linkSize = 72 * sizeof(double);
     std::string InputConf::m_inputDir;
@@ -89,19 +107,20 @@ namespace LatticeIO {
                 startPointY = startPointZ + volumeY * ( Parallel::rankCoord()[1]*Parallel::latticeSubSize()[1] + y);
                     for(int x = 0; x < Parallel::latticeSubSize()[0]; x++){
                         startPointX = startPointY + volumeX * ( Parallel::rankCoord()[0]*Parallel::latticeSubSize()[0] + x);
-                        startPointX *= m_linkSize;
 
-                        // CHROMA
+                        // FOR CHROMA
+                        startPointX *= 72 * sizeof(double);
                         for(int mu = 0; mu < 4; mu++){
                             for(int i = 0; i < 18; i++){
                                 double a;
                                 MPI_File_read_at(input, startPointX, &a, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-                                lattice(x,y,z,t).m_links[mu].mat[i] = ReverseFloat(a);
+                                lattice(x,y,z,t).m_links[mu].mat[i] = ReverseDouble(a);
                                 startPointX += sizeof(double);
                             }
                         }
 
-                        // Normal
+                        // FOR REASONABLE ENDIAN
+                        //startPointX *= m_linkSize;
                         //MPI_File_read_at(input, startPointX, lattice(x,y,z,t).m_links, 72, MPI_DOUBLE, MPI_STATUS_IGNORE);
                     }
                 }

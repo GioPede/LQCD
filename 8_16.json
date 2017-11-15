@@ -21,7 +21,7 @@
     "Action" : {
         "type"   : "puregauge",
         "params" : {
-            "beta" : 6.4
+            "beta" : 1.9
         }
     },
     "Observables" : [

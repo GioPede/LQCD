@@ -161,14 +161,14 @@ void SuperObs::compute(){
             tmp_2 = ~(clovers[mu][nu]);
             clovers[mu][nu] -= tmp_2;
             tmp_2.setSU3Zero();
-            for(int i = 1; i < 18; i+=2)
+            for(int i = 1; i < 18; i+=8)
                 tmp_2.mat[i] = clovers[mu][nu].imagTrace()/3.0;
             clovers[mu][nu] -= tmp_2;
 
             tmp_2 = ~(clovers[rho][sig]);
             clovers[rho][sig] -= tmp_2;
             tmp_2.setSU3Zero();
-            for(int i = 1; i < 18; i+=2)
+            for(int i = 1; i < 18; i+=8)
                 tmp_2.mat[i] = clovers[rho][sig].imagTrace()/3.0;
             clovers[rho][sig] -= tmp_2;
 

@@ -1,7 +1,7 @@
 #pragma once
-//#define LACONIA
+#define LACONIA
 //#define ABEL
-#define OFFICE
+//#define OFFICE
 
 #ifdef OFFICE
 #define OUT_PREFIX "conf"

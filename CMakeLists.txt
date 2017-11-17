@@ -20,6 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 # The following folder will be included
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/user_extensions/include)
+include_directories(/opt/software/boost/1.58.0--GCC-4.9/include)
 
 # Core library
 add_executable(LatticeQCD "src/CMakeLists.txt")

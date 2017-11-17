@@ -39,14 +39,14 @@ SU3 PureGauge::computeDerivative(int x, int y, int z, int t, int mu){
     m_omega = (~m_constPart) * (~(*m_lat)(x,y,z,t)[mu]);
     m_omega = (~m_omega-m_omega);
     double tr = m_omega.imagTrace()/3.0;
-    for(int i = 1; i < 18; i+=2)
+    for(int i = 1; i < 18; i+=8)
         m_omega.mat[i] -= tr;
 
     //m_omega*=0.5;
     for(int i = 0; i < 18; i+=2){
         double temp = m_omega.mat[i];
-        m_omega.mat[i] = -m_omega.mat[i+1];
-        m_omega.mat[i+1] = temp;
+        m_omega.mat[i] = -m_omega.mat[i+1]*0.5;
+        m_omega.mat[i+1] = temp*0.5;
     }
     return std::move(m_omega);
 }

@@ -126,8 +126,7 @@ namespace LatticeIO {
                 }
             }
         }
-        printf("%i\n", startPointX);
-       Parallel::closeFile(input);
+        Parallel::closeFile(input);
     }
 
 } // end LatticeIO

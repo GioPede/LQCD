@@ -1,11 +1,12 @@
 #include "Math/su3.h"
 #include "Math/random.h"
 #include "Math/complex.h"
+#include <boost/random.hpp>
 #include <random>
 
 std::random_device Random::rd;
-std::mt19937 Random::randomGen(Random::rd());
-std::uniform_real_distribution<double> Random::randomUniformInterval(0.0, 1.0);
+boost::random::mt19937 Random::randomGen(Random::rd());
+boost::random::uniform_real_distribution<double> Random::randomUniformInterval(0.0, 1.0);
 
 double Random::randUniform(){
     return randomUniformInterval(randomGen);

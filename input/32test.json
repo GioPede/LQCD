@@ -1,0 +1,34 @@
+{
+    "LatticeSize" : {
+        "x" : 32,
+        "y" : 32,
+        "z" : 32,
+        "t" : 64
+    },
+    "SubLatticeSize" : {
+        "x" : 8,
+        "y" : 8,
+        "z" : 8,
+        "t" : 4
+    },
+    "App" : {
+        "type"   : "PGFG",
+        "params" : {
+            "startType"  : "Cold",
+            "MCSteps"    : 200000,
+            "NConf"      : 500,
+            "SU3eps"     : 0.1,
+            "thermSteps" : 2000
+        }
+    },
+    "Action" : {
+        "type"   : "puregauge",
+        "params" : {
+            "beta" : 6.2
+        }
+    },
+    "Observables" : [
+        "superobs"
+    ],
+    "OutputDir" : "/mnt/ls15/scratch/users/pederiva/conf/32test" 
+}

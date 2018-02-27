@@ -150,7 +150,7 @@ void GaugeFieldFactory::updateLink(int x,int y, int z, int t, int mu){
     m_act->computeStaples(x, y, z, t, mu);
 
     // try 10 hits on the current link
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 30; i++){
         newLink = Random::randSU3Transf(m_epsilon) * (*m_lat)(x,y,z,t)[mu] ;
 
         // metropolis accept/reject

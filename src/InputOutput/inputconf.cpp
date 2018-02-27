@@ -49,7 +49,7 @@ namespace LatticeIO {
 
     }
 
-
+ 
     int InputConf::m_linkSize = 72 * sizeof(double);
     std::string InputConf::m_inputDir;
 

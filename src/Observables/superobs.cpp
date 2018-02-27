@@ -49,7 +49,7 @@ void SuperObs::compute(){
                              * ~(*m_lat)(x,y,z,t)[nu];
 
             plaqSum += clovers[mu][nu];
-
+/*
             clovers[mu][nu] -=  ~(m_lat->shift(x,y,z,t,mu, mu, -1))
                              *   (m_lat->shift(x,y,z,t,nu, mu, -1))
                              *   (m_lat->shift2 (x,y,z,t,mu,nu,1,mu,-1))
@@ -64,7 +64,7 @@ void SuperObs::compute(){
                              *  ~(m_lat->shift2 (x,y,z,t,nu,nu,-1,mu,1))
                              *  ~(m_lat->shift(x,y,z,t,mu, nu, -1))
                              *   (m_lat->shift(x,y,z,t,nu, nu, -1));
-
+*/
             clovers[mu][nu] *= 2;
             clovers[mu][nu] -= ~clovers[mu][nu];
             double tr = clovers[mu][nu].imagTrace()/3.0;

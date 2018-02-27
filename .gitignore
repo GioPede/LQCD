@@ -6,6 +6,10 @@ conf/*
 *.user
 *.sh
 CMakeLists.txt.user
+*.o*
+*.e*
+
+
 
 
 *~

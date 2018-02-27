@@ -1,0 +1,34 @@
+{
+    "LatticeSize" : {
+        "x" : 24,
+        "y" : 24,
+        "z" : 24,
+        "t" : 48
+    },
+    "SubLatticeSize" : {
+        "x" : 6,
+        "y" : 6,
+        "z" : 6,
+        "t" : 3
+    },
+    "App" : {
+        "type"   : "PGFG",
+        "params" : {
+            "startType"  : "Cold",
+            "MCSteps"    : 600000,
+            "NConf"      : 1000,
+            "SU3eps"     : 0.25,
+            "thermSteps" : 10000
+        }
+    },
+    "Action" : {
+        "type"   : "puregauge",
+        "params" : {
+            "beta" : 6.0
+        }
+    },
+    "Observables" : [
+        "superobs"
+    ],
+    "OutputDir" : "/mnt/ls15/scratch/users/pederiva/masterData/24_b6.00_1024" 
+}

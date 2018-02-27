@@ -17,6 +17,7 @@ public:
     std::vector<double>& getObsValues() { return m_obsValues; }
     void execute();
     //void createLattice(std::array<int,4> latticeSize);
+    std::vector<std::string> m_inputConfList;
 
 private:
     // member classes

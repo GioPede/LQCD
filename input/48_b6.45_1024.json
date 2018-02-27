@@ -30,5 +30,6 @@
     "Observables" : [
         "superobs"
     ],
+    "InputDir" : "/mnt/ls15/scratch/users/pederiva/masterData/48_b6.45_1024", 
     "OutputDir" : "/mnt/ls15/scratch/users/pederiva/masterData/48_b6.45_1024" 
 }

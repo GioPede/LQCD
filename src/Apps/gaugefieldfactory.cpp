@@ -33,6 +33,8 @@ void GaugeFieldFactory::initialize(){
 
     LatticeIO::OutputTerm::printInitialConditions();
     LatticeIO::OutputObs::initialize(m_obs);
+    LatticeIO::InputConf::getInputList(m_inputConfList);
+
 }
 
 // MAIN FUNCTION OF CLASS. GENERATES GAUGE FIELD CONFIGURATION USING METROPILIS'

@@ -19,7 +19,7 @@ namespace LatticeIO {
 
         void validateInputDir(){
             // check action
-            if(jsonFile["App"]["type"] == "GFR" || jsonFile["App"]["type"] == "FLOW"){
+            if(jsonFile["App"]["type"] == "GFR" || jsonFile["App"]["type"] == "FLOW" || jsonFile["App"]["type"] == "PGFG"){
                 if(jsonFile.count("InputDir") == 0){
                     std::cerr << "LatticeQCD Error: no InputDir specified\n";
                     exit(1);
@@ -49,7 +49,7 @@ namespace LatticeIO {
         }
 
         void registerInputDir(){
-            if(jsonFile["App"]["type"] == "GFR" || jsonFile["App"]["type"] == "FLOW"){
+            if(jsonFile["App"]["type"] == "GFR" || jsonFile["App"]["type"] == "FLOW" || jsonFile["App"]["type"] == "PGFG"){
                 LatticeIO::InputConf::setInputDir(jsonFile["InputDir"]);
             }
         }

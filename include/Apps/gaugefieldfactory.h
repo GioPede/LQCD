@@ -47,4 +47,5 @@ private:
     void sampleConf();
     void thermalizeTime();
     void sampleConfTime();
+    void continueSample(int confStart);
 };

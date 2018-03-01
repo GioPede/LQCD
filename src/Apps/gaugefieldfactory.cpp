@@ -33,6 +33,7 @@ void GaugeFieldFactory::initialize(){
 
     LatticeIO::OutputTerm::printInitialConditions();
     LatticeIO::OutputObs::initialize(m_obs);
+
     LatticeIO::InputConf::getInputList(m_inputConfList);
 
 }
@@ -42,12 +43,18 @@ void GaugeFieldFactory::initialize(){
 void GaugeFieldFactory::generateConfigurations(){
     // check that current processor should be active
     if(Parallel::isActive()){
+        if(m_inputConfList.size() != 0){
+            LatticeIO::InputConf::readConf(*m_lat, m_inputConfList[m_inputConfList.size()-1].c_str());
+            continueSample(m_inputConfList.size());
+        }
 
-        // thermalization
-        thermalize();
+        else{
+            // thermalization
+            thermalize();
 
-        // generate and save configurations
-        sampleConf();
+            // generate and save configurations
+            sampleConf();
+        }
     }
 }
 
@@ -67,6 +74,24 @@ void GaugeFieldFactory::thermalize(){
 void GaugeFieldFactory::sampleConf(){
     int confNum = 0;
     for(int step = 1; step <= m_MCSteps; step++){
+        // perform an update
+        MCUpdate();
+
+        // compute and print information on current state
+        if(step % m_correlationSteps == 0){
+            computeObservables();
+            LatticeIO::OutputObs::writeObs(m_obs, step);
+            LatticeIO::OutputTerm::printGenStep(confNum, m_obs, double(m_accepted)/double(m_updates));
+            LatticeIO::OutputConf::writeConf(*m_lat, confNum);
+            confNum++;
+        }
+    }
+}
+
+void GaugeFieldFactory::continueSample(int confStart){
+    int confNum = confStart;
+    int stepStart = confStart*m_correlationSteps;
+    for(int step = stepStart + 1; step <= m_MCSteps; step++){
         // perform an update
         MCUpdate();
 

@@ -64,6 +64,7 @@ namespace LatticeIO {
         for (boost::filesystem::directory_entry& x : boost::filesystem::directory_iterator(inputPath))
             if(x.path().extension() == ".bin")
                 inputConfList.push_back(x.path().string());
+        std::sort(inputConfList.begin(), inputConfList.end());
     }
 
     // Read a single file for every sublattice (for testing)
@@ -126,7 +127,6 @@ namespace LatticeIO {
                 }
             }
         }
-        printf("%i\n", startPointX);
        Parallel::closeFile(input);
     }
 
